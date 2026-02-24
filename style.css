@@ -28,15 +28,12 @@ body {
     margin: 0; padding: 0; background-color: var(--bg); color: var(--text);
     overflow-x: hidden; transition: background-color 0.3s, color 0.3s;
     -webkit-tap-highlight-color: transparent;
-    
-    /* మొబైల్ లో ఎక్కడ పడితే అక్కడ టెక్స్ట్ సెలెక్ట్ అవ్వకుండా ఆపే కోడ్ */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-/* సెర్చ్ మరియు నోట్స్ బాక్స్ లో మాత్రం టైపింగ్ కోసం పర్మిషన్ (దీనివల్లే టైపింగ్ ప్రాబ్లమ్ సాల్వ్ అవుతుంది) */
 input, textarea {
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
@@ -45,7 +42,6 @@ input, textarea {
 }
 
 h1, h2, h3, h4 { font-family: 'Anek Telugu', sans-serif; font-weight: 700; margin: 0;}
-
 .material-icons, .material-icons-outlined { vertical-align: middle; }
 
 /* Header */
@@ -55,8 +51,8 @@ header {
     display: flex; justify-content: space-between; align-items: center;
     position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-body.dark-mode header { background: #111111; border-bottom: 1px solid var(--border); color: var(--accent); }
-header h1 { font-size: 20px; letter-spacing: 1px; flex: 1; text-align: center; }
+body.dark-mode header { background: #111111; border-bottom: 1px solid var(--border); color: white; }
+header h1 { font-size: 20px; letter-spacing: 1px; flex: 1; text-align: center; margin: 0;}
 .header-left { display: flex; align-items: center; width: 40px;}
 .header-right { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
 .icon-btn { background: none; border: none; color: inherit; cursor: pointer; transition: 0.2s; padding: 5px; display: flex; align-items: center; justify-content: center;}
@@ -88,8 +84,12 @@ body.dark-mode .sidebar-header { color: var(--accent); }
 }
 .menu-book-btn:hover { background: var(--bg); color: var(--accent); font-weight: bold; }
 
-/* Views & Containers */
-.view-container { padding: 20px; max-width: 900px; margin: 0 auto; min-height: 80vh; padding-bottom: 90px;}
+/* Views & Containers - Mobile Padding Optimization */
+.view-container { padding: 15px; max-width: 900px; margin: 0 auto; min-height: 80vh; padding-bottom: 90px;}
+@media (max-width: 450px) {
+    .view-container { padding: 10px; } 
+}
+
 .page-header { display: flex; align-items: center; gap: 15px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px;}
 .back-btn { background: var(--primary); color: white; border: 1px solid var(--border); padding: 5px 12px; border-radius: 5px; cursor: pointer; font-family: 'Anek Telugu'; font-weight: bold; display: flex; align-items: center; gap: 4px; font-size: 14px;}
 body.dark-mode .back-btn { color: var(--accent); }
@@ -126,20 +126,34 @@ body.dark-mode .grid-item h4 { color: var(--text); }
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 .about-card h2 { color: var(--primary); margin-bottom: 10px; font-size: 28px;}
-body.dark-mode .about-card h2 { color: var(--accent); }
-.about-card p { font-size: 18px; line-height: 1.6; margin-bottom: 20px;}
-.youtube-section {
-    background: var(--bg); padding: 25px; border-radius: 8px; margin-top: 30px;
-    border: 1px solid var(--border);
-}
-.youtube-section h3 { margin: 10px 0; color: var(--text); }
-.yt-btn {
-    display: inline-block; background: #ff0000; color: white; padding: 12px 25px;
-    border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 15px;
-    transition: 0.3s; font-family: 'Anek Telugu', sans-serif;
-}
-.yt-btn:hover { background: #cc0000; transform: scale(1.05); }
+body.dark-mode .about-card h2 { color: #ffffff; }
 
+.about-text-content { text-align: center; line-height: 1.8; font-size: 18px; color: var(--text); }
+.about-tagline { text-align: center; color: var(--primary); margin-top: 25px; font-size: 22px; }
+
+body.dark-mode .about-text-content,
+body.dark-mode .about-text-content p,
+body.dark-mode .about-tagline,
+body.dark-mode .about-card p { color: #ffffff !important; }
+
+/* Social Media Outline Buttons */
+.social-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 12px 20px; border-radius: 8px; text-decoration: none;
+    font-weight: bold; font-size: 18px; transition: 0.3s;
+    font-family: 'Anek Telugu', sans-serif; background: transparent; border: 2px solid;
+}
+.outline-yt { color: #FF0000; border-color: #FF0000; }
+.outline-yt:hover { background: #FF0000; color: #ffffff; }
+.outline-wa { color: #25D366; border-color: #25D366; }
+.outline-wa:hover { background: #25D366; color: #ffffff; }
+.outline-ig { color: #E1306C; border-color: #E1306C; }
+.outline-ig:hover { background: #E1306C; color: #ffffff; }
+
+body.dark-mode .social-btn { background: #000000; }
+body.dark-mode .outline-yt:hover { background: #FF0000; color: #ffffff; }
+body.dark-mode .outline-wa:hover { background: #25D366; color: #ffffff; }
+body.dark-mode .outline-ig:hover { background: #E1306C; color: #ffffff; }
 /* Chapters Grid View */
 .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 12px; }
 .grid-num-btn {
@@ -158,45 +172,89 @@ body.dark-mode .about-card h2 { color: var(--accent); }
 .chapter-btn.active { background: var(--primary); color: var(--accent); border-color: var(--accent); }
 body.dark-mode .chapter-btn.active { color: var(--bg); background: var(--accent); }
 
-/* Verses */
-#verses-container { padding: 10px 0; }
-.verse { margin-bottom: 15px; display: flex; align-items: flex-start; padding: 10px; border-radius: 8px; transition: background-color 0.2s;}
-.verse-num { color: var(--accent); font-weight: bold; margin-right: 15px; min-width: 30px; margin-top: 8px; font-size: 16px;}
-.verse-text { flex: 1; font-family: 'Mallanna', serif; font-size: var(--verse-size); line-height: 1.8; cursor: pointer; border-radius: 4px; padding: 2px 5px;}
+/* --------------------------------------------------- */
+/* NEW VERSES LAYOUT (BOOK STYLE) - REDUCED GAPS       */
+/* --------------------------------------------------- */
+#verses-container { padding: 5px 0; }
+.verse { 
+    position: relative; 
+    margin-bottom: 8px; /* వచనాల మధ్య గ్యాప్ తగ్గించాను (20px నుండి 8px కి) */
+    padding: 5px 30px 5px 0px; /* బుక్‌మార్క్ కోసం 45px నుండి 30px కి తగ్గించాను */
+    border-radius: 8px; 
+    transition: background-color 0.2s;
+}
+.verse-num { 
+    color: var(--accent); 
+    font-weight: bold; 
+    margin-right: 6px; 
+    font-size: 16px; 
+}
+.verse-text { 
+    font-family: 'Mallanna', serif; 
+    font-size: var(--verse-size); 
+    line-height: 1.6; /* లైన్ల మధ్య గ్యాప్ ని కొద్దిగా టైట్ చేశాను (1.8 నుండి 1.6 కి) */
+    cursor: pointer; 
+}
+
+/* Parallel Bible (English) Styles */
+.verse-text-en {
+    display: none; 
+    font-family: 'Georgia', serif; 
+    font-size: calc(var(--verse-size) - 4px); 
+    color: #555;
+    margin-top: 5px; /* ఇంగ్లీష్ వచనానికి గ్యాప్ తగ్గించాను */
+    padding-top: 5px;
+    border-top: 1px dashed var(--border);
+    line-height: 1.4;
+}
+body.dark-mode .verse-text-en { color: #aaa; }
+body.show-parallel .verse-text-en { display: block; }
 
 /* Custom User Highlights */
 .verse-text.highlight-none { background-color: transparent; }
-.verse.selected { background-color: rgba(212, 175, 55, 0.15); border-left: 4px solid var(--accent); }
+.verse.selected { background-color: rgba(212, 175, 55, 0.15); border-left: 4px solid var(--accent); padding-left: 10px;}
 body.dark-mode .verse.selected { background-color: rgba(200, 162, 65, 0.25); }
 
-.bookmark-btn { background: none; border: none; cursor: pointer; color: #777; margin-left: 10px; transition: 0.2s; display: flex; padding: 5px;}
+/* Bookmark Button (Absolute positioning & reduced spacing) */
+.bookmark-btn { 
+    position: absolute; 
+    top: 5px; 
+    right: -5px; /* ఐకాన్ ని ఇంకొంచెం కుడి అంచుకి జరిపాను */
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: #777; 
+    transition: 0.2s; 
+    padding: 5px; /* ప్యాడింగ్ తగ్గించాను */
+}
 body.dark-mode .bookmark-btn { color: #555; }
 .bookmark-btn.saved { color: var(--accent); }
 .note-indicator { color: var(--accent); font-size: 18px; margin-left: 5px; cursor: pointer; vertical-align: super; }
 
-/* Lists (History, Bookmarks, Notes List) */
+/* Lists */
 .list-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; position: relative;}
 .list-card:hover { border-color: var(--accent); }
 .list-card .ref { color: var(--accent); font-weight: bold; font-size: 16px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;}
 .list-card .text { font-family: 'Mallanna', serif; font-size: 22px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
 .list-card .user-note { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 18px; color: var(--text); font-family: inherit;}
 
-/* Advanced Notes Editor Styles (NEW) */
+/* Advanced Notes Editor Styles */
 .note-editor-wrapper { display: flex; flex-direction: column; height: 75vh; }
 .note-heading-input {
     width: 100%; font-size: 24px; font-weight: bold; color: var(--primary);
     border: none; border-bottom: 2px solid var(--border); padding: 10px 0;
     margin-bottom: 15px; background: transparent; outline: none; font-family: 'Anek Telugu', sans-serif;
 }
-body.dark-mode .note-heading-input { color: var(--accent); border-color: var(--border); }
+body.dark-mode .note-heading-input { color: #ffffff; border-color: var(--border); }
 .note-body-textarea {
     width: 100%; flex: 1; font-size: 20px; color: var(--text);
     border: none; padding: 10px 0; background: transparent; outline: none;
     font-family: 'Mallanna', serif; resize: none; line-height: 1.8;
 }
+body.dark-mode .note-body-textarea { color: #ffffff; }
 .note-body-textarea::placeholder, .note-heading-input::placeholder { color: #999; }
 
-/* Modals (Search, Highlight) */
+/* Modals */
 .search-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.8); z-index: 1002; display: none; justify-content: center; align-items: center;
@@ -208,16 +266,19 @@ body.dark-mode .note-heading-input { color: var(--accent); border-color: var(--b
 }
 .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px;}
 .modal-header h2 { color: var(--primary); font-size: 22px; }
-body.dark-mode .modal-header h2 { color: var(--text); }
+body.dark-mode .modal-header h2 { color: #ffffff; }
 
 /* Form Elements */
 .search-group { margin-bottom: 15px; }
 .search-group label { display: block; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+body.dark-mode .search-group label { color: #ffffff; }
 .search-group select, .search-group input {
     width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; 
     font-size: 16px; background: var(--bg); color: var(--text); outline: none; font-family: inherit;
 }
+body.dark-mode .search-group select, body.dark-mode .search-group input { color: #ffffff; }
 .search-group input:focus { border-color: var(--accent); }
+
 .primary-btn {
     width: 100%; padding: 12px; background: var(--primary); color: white;
     border: 1px solid var(--border); border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; font-family: inherit; transition: 0.3s;
@@ -245,11 +306,3 @@ body.dark-mode #selection-action-bar { background: var(--accent); }
 body.dark-mode .action-buttons button { color: var(--bg); }
 
 ::-webkit-scrollbar { width: 0px; height: 0px; background: transparent; }
-
-@media (max-width: 400px) {
-    header h1 { font-size: 16px; }
-    .icon-btn .material-icons-outlined { font-size: 20px; }
-    .action-buttons { gap: 10px; }
-    .action-buttons button { font-size: 14px; }
-    .action-buttons button .material-icons { font-size: 18px; }
-}
