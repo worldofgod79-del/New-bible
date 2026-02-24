@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Anek+Telugu:wght@400;600;700&family=Mallanna&display=swap');
+
+:root {
+    --primary: #1a365d;
+    --accent: #d4af37;
+    --bg: #f8fafc;
+    --text: #2d3748;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --verse-size: 22px; 
+    --highlight-search-bg: #fef08a;
+    --highlight-search-text: #b45309;
+}
+
+body.dark-mode {
+    --primary: #222222;       
+    --accent: #c8a241;        
+    --bg: #000000;            
+    --text: #e0e0e0;          
+    --card: #111111;          
+    --border: #333333;        
+    --highlight-search-bg: #3a3215;  
+    --highlight-search-text: #e8c66a; 
+}
+
+body {
+    font-family: 'Anek Telugu', sans-serif;
+    margin: 0; padding: 0; background-color: var(--bg); color: var(--text);
+    overflow-x: hidden; transition: background-color 0.3s, color 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    
+    /* మొబైల్ లో ఎక్కడ పడితే అక్కడ టెక్స్ట్ సెలెక్ట్ అవ్వకుండా ఆపే కోడ్ */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* సెర్చ్ మరియు నోట్స్ బాక్స్ లో మాత్రం టైపింగ్ కోసం పర్మిషన్ (దీనివల్లే టైపింగ్ ప్రాబ్లమ్ సాల్వ్ అవుతుంది) */
+input, textarea {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+h1, h2, h3, h4 { font-family: 'Anek Telugu', sans-serif; font-weight: 700; margin: 0;}
+
+.material-icons, .material-icons-outlined { vertical-align: middle; }
+
+/* Header */
+header {
+    background: linear-gradient(to right, #1a365d, #2c5282);
+    color: white; padding: 12px 15px;
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+body.dark-mode header { background: #111111; border-bottom: 1px solid var(--border); color: var(--accent); }
+header h1 { font-size: 20px; letter-spacing: 1px; flex: 1; text-align: center; }
+.header-left { display: flex; align-items: center; width: 40px;}
+.header-right { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+.icon-btn { background: none; border: none; color: inherit; cursor: pointer; transition: 0.2s; padding: 5px; display: flex; align-items: center; justify-content: center;}
+
+/* Side Menu */
+.sidebar {
+    position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+    background: var(--card); box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    transition: 0.3s ease; z-index: 1001; display: flex; flex-direction: column;
+}
+.sidebar.open { left: 0; }
+.sidebar-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); z-index: 1000; display: none;
+}
+.sidebar-overlay.open { display: block; }
+.sidebar-header {
+    padding: 20px; background: var(--primary); color: white;
+    display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border);
+}
+body.dark-mode .sidebar-header { color: var(--accent); }
+.close-btn { background: none; border: none; color: inherit; cursor: pointer; display: flex;}
+.sidebar-content { padding: 10px; overflow-y: auto; flex: 1; }
+.book-cat { color: var(--accent); font-weight: bold; padding: 10px; margin-top: 10px; border-bottom: 1px solid var(--border); }
+.menu-book-btn {
+    display: block; width: 100%; padding: 12px 10px; margin: 2px 0;
+    background: none; border: none; text-align: left; font-size: 16px; font-family: 'Anek Telugu';
+    cursor: pointer; border-radius: 5px; color: var(--text);
+}
+.menu-book-btn:hover { background: var(--bg); color: var(--accent); font-weight: bold; }
+
+/* Views & Containers */
+.view-container { padding: 20px; max-width: 900px; margin: 0 auto; min-height: 80vh; padding-bottom: 90px;}
+.page-header { display: flex; align-items: center; gap: 15px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px;}
+.back-btn { background: var(--primary); color: white; border: 1px solid var(--border); padding: 5px 12px; border-radius: 5px; cursor: pointer; font-family: 'Anek Telugu'; font-weight: bold; display: flex; align-items: center; gap: 4px; font-size: 14px;}
+body.dark-mode .back-btn { color: var(--accent); }
+.back-btn .material-icons-outlined { font-size: 18px; }
+.book-title { color: var(--primary); font-size: 22px; flex: 1;}
+body.dark-mode .book-title { color: var(--text); }
+
+/* Home View */
+.daily-verse-card {
+    background: var(--card); padding: 25px; border-radius: 12px; 
+    text-align: center; border-left: 5px solid var(--accent); margin-bottom: 30px;
+    border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.daily-verse-card h3 { color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 5px;}
+body.dark-mode .daily-verse-card h3 { color: var(--accent); }
+.daily-verse-card p { font-family: 'Mallanna', serif; font-size: 26px; line-height: 1.6; margin: 0;}
+.verse-ref { color: var(--accent); font-weight: bold; display: block; margin-top: 15px; font-size: 18px;}
+
+.home-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.grid-item {
+    background: var(--card); padding: 25px 10px; border-radius: 12px;
+    text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid var(--border);
+}
+.grid-item:hover { transform: translateY(-3px); border-color: var(--accent); }
+.grid-item .icon .material-icons-outlined { font-size: 40px; margin-bottom: 15px; color: var(--primary); }
+body.dark-mode .grid-item .icon .material-icons-outlined { color: var(--text); }
+.grid-item h4 { color: var(--primary); font-size: 18px; }
+body.dark-mode .grid-item h4 { color: var(--text); }
+
+/* About Us View */
+.about-card {
+    background: var(--card); border: 1px solid var(--border); padding: 30px; 
+    border-radius: 12px; text-align: center; margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.about-card h2 { color: var(--primary); margin-bottom: 10px; font-size: 28px;}
+body.dark-mode .about-card h2 { color: var(--accent); }
+.about-card p { font-size: 18px; line-height: 1.6; margin-bottom: 20px;}
+.youtube-section {
+    background: var(--bg); padding: 25px; border-radius: 8px; margin-top: 30px;
+    border: 1px solid var(--border);
+}
+.youtube-section h3 { margin: 10px 0; color: var(--text); }
+.yt-btn {
+    display: inline-block; background: #ff0000; color: white; padding: 12px 25px;
+    border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 15px;
+    transition: 0.3s; font-family: 'Anek Telugu', sans-serif;
+}
+.yt-btn:hover { background: #cc0000; transform: scale(1.05); }
+
+/* Chapters Grid View */
+.chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 12px; }
+.grid-num-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 15px 0; text-align: center; border-radius: 8px; font-size: 20px; 
+    font-weight: bold; cursor: pointer; transition: 0.2s; font-family: 'Poppins', sans-serif;
+}
+.grid-num-btn:hover { background: var(--primary); color: var(--accent); border-color: var(--accent); }
+
+/* Reading View */
+.chapters-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border);}
+.chapter-btn {
+    padding: 6px 15px; background: var(--card); border: 1px solid var(--border); color: var(--text);
+    border-radius: 20px; font-weight: bold; cursor: pointer; white-space: nowrap; font-family: 'Anek Telugu';
+}
+.chapter-btn.active { background: var(--primary); color: var(--accent); border-color: var(--accent); }
+body.dark-mode .chapter-btn.active { color: var(--bg); background: var(--accent); }
+
+/* Verses */
+#verses-container { padding: 10px 0; }
+.verse { margin-bottom: 15px; display: flex; align-items: flex-start; padding: 10px; border-radius: 8px; transition: background-color 0.2s;}
+.verse-num { color: var(--accent); font-weight: bold; margin-right: 15px; min-width: 30px; margin-top: 8px; font-size: 16px;}
+.verse-text { flex: 1; font-family: 'Mallanna', serif; font-size: var(--verse-size); line-height: 1.8; cursor: pointer; border-radius: 4px; padding: 2px 5px;}
+
+/* Custom User Highlights */
+.verse-text.highlight-none { background-color: transparent; }
+.verse.selected { background-color: rgba(212, 175, 55, 0.15); border-left: 4px solid var(--accent); }
+body.dark-mode .verse.selected { background-color: rgba(200, 162, 65, 0.25); }
+
+.bookmark-btn { background: none; border: none; cursor: pointer; color: #777; margin-left: 10px; transition: 0.2s; display: flex; padding: 5px;}
+body.dark-mode .bookmark-btn { color: #555; }
+.bookmark-btn.saved { color: var(--accent); }
+.note-indicator { color: var(--accent); font-size: 18px; margin-left: 5px; cursor: pointer; vertical-align: super; }
+
+/* Lists (History, Bookmarks, Notes List) */
+.list-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; position: relative;}
+.list-card:hover { border-color: var(--accent); }
+.list-card .ref { color: var(--accent); font-weight: bold; font-size: 16px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;}
+.list-card .text { font-family: 'Mallanna', serif; font-size: 22px; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+.list-card .user-note { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 18px; color: var(--text); font-family: inherit;}
+
+/* Advanced Notes Editor Styles (NEW) */
+.note-editor-wrapper { display: flex; flex-direction: column; height: 75vh; }
+.note-heading-input {
+    width: 100%; font-size: 24px; font-weight: bold; color: var(--primary);
+    border: none; border-bottom: 2px solid var(--border); padding: 10px 0;
+    margin-bottom: 15px; background: transparent; outline: none; font-family: 'Anek Telugu', sans-serif;
+}
+body.dark-mode .note-heading-input { color: var(--accent); border-color: var(--border); }
+.note-body-textarea {
+    width: 100%; flex: 1; font-size: 20px; color: var(--text);
+    border: none; padding: 10px 0; background: transparent; outline: none;
+    font-family: 'Mallanna', serif; resize: none; line-height: 1.8;
+}
+.note-body-textarea::placeholder, .note-heading-input::placeholder { color: #999; }
+
+/* Modals (Search, Highlight) */
+.search-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 1002; display: none; justify-content: center; align-items: center;
+}
+.search-modal.open { display: flex; }
+.search-modal-content {
+    background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border);
+    width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.modal-header { display: flex; justify-content: space-between; margin-bottom: 20px;}
+.modal-header h2 { color: var(--primary); font-size: 22px; }
+body.dark-mode .modal-header h2 { color: var(--text); }
+
+/* Form Elements */
+.search-group { margin-bottom: 15px; }
+.search-group label { display: block; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+.search-group select, .search-group input {
+    width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; 
+    font-size: 16px; background: var(--bg); color: var(--text); outline: none; font-family: inherit;
+}
+.search-group input:focus { border-color: var(--accent); }
+.primary-btn {
+    width: 100%; padding: 12px; background: var(--primary); color: white;
+    border: 1px solid var(--border); border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; font-family: inherit; transition: 0.3s;
+}
+body.dark-mode .primary-btn { color: var(--bg); background: var(--accent); }
+.primary-btn:hover { opacity: 0.9; }
+
+.color-options { display: flex; gap: 15px; justify-content: center; margin-top: 10px;}
+.color-btn { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+.color-btn:hover { transform: scale(1.1); }
+.highlight { background: var(--highlight-search-bg); font-weight: bold; color: var(--highlight-search-text); padding: 0 4px; border-radius: 3px; }
+
+/* Floating Selection Action Bar */
+#selection-action-bar {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--primary); padding: 10px 20px; border-radius: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 2000; display: none;
+}
+body.dark-mode #selection-action-bar { background: var(--accent); }
+.action-buttons { display: flex; gap: 20px; align-items: center; }
+.action-buttons button {
+    background: none; border: none; color: white; display: flex; align-items: center; gap: 5px;
+    font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Anek Telugu', sans-serif;
+}
+body.dark-mode .action-buttons button { color: var(--bg); }
+
+::-webkit-scrollbar { width: 0px; height: 0px; background: transparent; }
+
+@media (max-width: 400px) {
+    header h1 { font-size: 16px; }
+    .icon-btn .material-icons-outlined { font-size: 20px; }
+    .action-buttons { gap: 10px; }
+    .action-buttons button { font-size: 14px; }
+    .action-buttons button .material-icons { font-size: 18px; }
+}

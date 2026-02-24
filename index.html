@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WORLD OF GOD - Bible App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <div class="header-left">
+        <button class="icon-btn" onclick="toggleSidebar()"><span class="material-icons-outlined">menu</span></button>
+    </div>
+    <h1 onclick="showHome()" style="cursor: pointer;">WORLD OF GOD</h1>
+    <div class="header-right">
+        <button class="icon-btn" onclick="showHistoryView()"><span class="material-icons-outlined">history</span></button>
+        <button class="icon-btn" onclick="showBookmarksView()"><span class="material-icons-outlined">bookmarks</span></button>
+        <button class="icon-btn" onclick="toggleDarkMode()"><span class="material-icons-outlined" id="theme-icon">dark_mode</span></button>
+        <button class="icon-btn" onclick="toggleSearch()"><span class="material-icons-outlined">search</span></button>
+    </div>
+</header>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>పుస్తకాలు</h2>
+        <button class="close-btn" onclick="toggleSidebar()"><span class="material-icons-outlined">close</span></button>
+    </div>
+    <div class="sidebar-content" id="sidebar-books"></div>
+</aside>
+
+<div class="search-modal" id="search-modal">
+    <div class="search-modal-content">
+        <div class="modal-header">
+            <h2>వెతుకులాట</h2>
+            <button class="close-btn" onclick="toggleSearch()"><span class="material-icons-outlined">close</span></button>
+        </div>
+        <div class="search-group">
+            <label>ఎక్కడ వెతకాలి?</label>
+            <select id="search-scope">
+                <option value="book" selected>ప్రస్తుత పుస్తకంలో</option>
+                <option value="ot">పాత నిబంధన (OT)</option>
+                <option value="nt">కొత్త నిబంధన (NT)</option>
+                <option value="all">బైబిల్ మొత్తం</option>
+            </select>
+        </div>
+        <div class="search-group">
+            <label>ఏ పదం వెతకాలి?</label>
+            <input type="text" id="search-input" placeholder="ఉదా: దేవుడు...">
+        </div>
+        <button class="primary-btn" onclick="executeSearch()">వెతకండి</button>
+    </div>
+</div>
+
+<div class="search-modal" id="highlight-modal">
+    <div class="search-modal-content">
+        <div class="modal-header">
+            <h2>రంగు ఎంచుకోండి</h2>
+            <button class="close-btn" onclick="closeHighlightPalette()"><span class="material-icons-outlined">close</span></button>
+        </div>
+        <div class="color-options">
+            <button class="color-btn" style="background: #fef08a;" onclick="applyHighlight('#fef08a')"></button>
+            <button class="color-btn" style="background: #bbf7d0;" onclick="applyHighlight('#bbf7d0')"></button>
+            <button class="color-btn" style="background: #bfdbfe;" onclick="applyHighlight('#bfdbfe')"></button>
+            <button class="color-btn" style="background: #fbcfe8;" onclick="applyHighlight('#fbcfe8')"></button>
+            <button class="color-btn" style="background: transparent; border: 2px solid #ccc; font-weight: bold; color: var(--text);" onclick="applyHighlight('none')">✖</button>
+        </div>
+    </div>
+</div>
+
+<main id="main-content">
+    
+    <div id="home-view" class="view-container">
+        <div class="daily-verse-card">
+            <h3><span class="material-icons-outlined" style="vertical-align: bottom;">auto_stories</span> నేటి వాక్యము</h3>
+            <p>"దేవుడు లోకమును ఎంతో ప్రేమించెను. కాగా ఆయన తన అద్వితీయకుమారునిగా పుట్టిన వానియందు విశ్వాసముంచు ప్రతివాడును నశింపక నిత్యజీవము పొందునట్లు ఆయనను అనుగ్రహించెను."</p>
+            <span class="verse-ref">- యోహాను 3:16</span>
+        </div>
+
+        <div class="home-grid">
+            <div class="grid-item" onclick="openSection('ot')">
+                <div class="icon"><span class="material-icons-outlined">menu_book</span></div>
+                <h4>పాత నిబంధన</h4>
+            </div>
+            <div class="grid-item" onclick="openSection('nt')">
+                <div class="icon"><span class="material-icons-outlined">import_contacts</span></div>
+                <h4>కొత్త నిబంధన</h4>
+            </div>
+            <div class="grid-item" onclick="showBookmarksView()">
+                <div class="icon"><span class="material-icons-outlined">bookmarks</span></div>
+                <h4>బుక్‌మార్క్స్</h4>
+            </div>
+            <div class="grid-item" onclick="showNotesView()">
+                <div class="icon"><span class="material-icons-outlined">edit_note</span></div>
+                <h4>నా నోట్స్</h4>
+            </div>
+            <div class="grid-item" onclick="showHistoryView()">
+                <div class="icon"><span class="material-icons-outlined">history</span></div>
+                <h4>చరిత్ర</h4>
+            </div>
+            <div class="grid-item" onclick="showAboutView()">
+                <div class="icon"><span class="material-icons-outlined">info</span></div>
+                <h4>మా గురించి</h4>
+            </div>
+        </div>
+    </div>
+
+    <div id="chapters-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title" id="chapters-book-title">Loading...</h2>
+        </div>
+        <div class="chapter-grid" id="chapter-grid-container"></div>
+    </div>
+
+    <div id="reading-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title" id="reading-book-title">Loading...</h2>
+        </div>
+        <div class="chapters-scroll" id="quick-chapters-list"></div>
+        <div id="verses-container"></div>
+    </div>
+
+    <div id="bookmarks-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title"><span class="material-icons-outlined">bookmarks</span> మీ బుక్‌మార్క్స్</h2>
+        </div>
+        <div id="bookmarks-container"></div>
+    </div>
+
+    <div id="notes-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title"><span class="material-icons-outlined">edit_note</span> నా నోట్స్</h2>
+        </div>
+        
+        <button class="primary-btn" onclick="createNewNote()" style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <span class="material-icons">add</span> క్రొత్త నోట్ (Create New)
+        </button>
+        
+        <div id="notes-list-container"></div>
+    </div>
+
+    <div id="note-editor-view" class="view-container" style="display: none; padding-top: 10px;">
+        <div class="page-header" style="justify-content: space-between; border-bottom: none; margin-bottom: 10px;">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> డన్</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="icon-btn" onclick="shareCurrentNote()" style="color: var(--primary); background: var(--card); padding: 8px 12px; border-radius: 5px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><span class="material-icons-outlined">share</span> షేర్</button>
+                <button class="icon-btn" onclick="deleteCurrentNote()" style="color: #e74c3c; background: var(--card); padding: 8px 12px; border-radius: 5px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.1);"><span class="material-icons-outlined">delete</span></button>
+            </div>
+        </div>
+        <div class="note-editor-wrapper">
+            <p id="note-save-status" style="font-size: 12px; color: gray; text-align: right; margin: 0 0 5px 0;">ఆటో-సేవ్ అవుతోంది...</p>
+            <input type="text" id="note-title-input" class="note-heading-input" placeholder="హెడ్డింగ్ (Title)..." oninput="autoSaveNote()">
+            <textarea id="note-content-input" class="note-body-textarea" placeholder="మీ నోట్స్ ఇక్కడ వ్రాయండి..." oninput="autoSaveNote()"></textarea>
+        </div>
+    </div>
+
+    <div id="history-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title"><span class="material-icons-outlined">history</span> ఇటీవల చదివినవి</h2>
+        </div>
+        <div id="history-container"></div>
+    </div>
+
+    <div id="about-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title"><span class="material-icons-outlined">info</span> మా గురించి</h2>
+        </div>
+        <div class="about-card">
+            <h2>WORLD OF GOD</h2>
+            <p><strong>Founder & Creator:</strong> Rajesh Karatapu</p>
+            <p>దేవుని వాక్యాన్ని ప్రతి ఒక్కరికీ సులభంగా, స్పష్టంగా అందించాలనే ఉద్దేశ్యంతో ఈ బైబిల్ యాప్ మరియు మా యూట్యూబ్ ఛానెల్ రూపొందించబడ్డాయి.</p>
+            
+            <div class="youtube-section">
+                <span class="material-icons" style="color: red; font-size: 50px;">play_circle_filled</span>
+                <h3>మా YouTube ఛానెల్‌</h3>
+                <p>మరిన్ని ఆత్మీయ సందేశాలు మరియు క్రిస్టియన్ పాటల కోసం మా ఛానెల్ ని ఫాలో అవ్వండి.</p>
+                <a href="https://www.youtube.com/" target="_blank" class="yt-btn">YouTube లో చూడండి</a>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div id="selection-action-bar" style="display: none;">
+    <div class="action-buttons">
+        <button onclick="shareSelectedVerses()"><span class="material-icons">share</span> షేర్</button>
+        <button onclick="openHighlightPalette()"><span class="material-icons">border_color</span> రంగు</button>
+        <button onclick="openNoteEditorForVerse()"><span class="material-icons">edit_note</span> నోట్</button>
+        <button onclick="clearVerseSelection()"><span class="material-icons">close</span></button>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
