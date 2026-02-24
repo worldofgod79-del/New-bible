@@ -9,10 +9,20 @@ let readHistory = JSON.parse(localStorage.getItem('wog_history')) || [];
 let userHighlights = JSON.parse(localStorage.getItem('wog_highlights')) || {};
 let userNotes = JSON.parse(localStorage.getItem('wog_notes')) || {};
 
+// Parallel Bible Variables
+let kjvBibleData = null; 
+let isParallelMode = localStorage.getItem('wog_parallel') === 'true';
+
 let currentFontSize = 22; 
 let initialDistance = null;
 let selectedVerses = []; 
-let currentEditingNoteId = null; // Track current note
+let currentEditingNoteId = null; 
+
+// Swipe Variables
+let touchStartX = 0;
+let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
 
 const bookFiles = [
     "ఆదికాండము.json", "నిర్గమకాండము.json", "లేవీయకాండము.json", "సంఖ్యాకాండము.json", "ద్వితీయోపదేశకాండము.json",
@@ -37,7 +47,10 @@ const ntFiles = bookFiles.slice(39, 66);
 function init() {
     populateSidebar();
     checkDarkMode();
+    checkParallelMode();
+    loadKjvData(); 
     setupPinchZoom();
+    setupSwipe(); // Initialize swipe feature
     
     history.replaceState({page: 'home'}, "Home", "?view=home");
     showHome(false); 
@@ -53,6 +66,10 @@ function toggleSidebar() {
 
 function toggleSearch() {
     document.getElementById('search-modal').classList.toggle('open');
+}
+
+function toggleSettingsModal() {
+    document.getElementById('settings-modal').classList.toggle('open');
 }
 
 function openHighlightPalette() {
@@ -141,43 +158,6 @@ function showAboutView(pushState = true) {
 }
 
 // ------------------------------------
-// Universal Share Function (Fallback Fix)
-// ------------------------------------
-async function shareText(textToShare, titleToShare) {
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: titleToShare,
-                text: textToShare
-            });
-            return; // Success
-        } catch (err) {
-            console.log('Native share failed or cancelled:', err);
-            // Move to fallback
-        }
-    }
-    
-    // Fallback: Copy to Clipboard
-    try {
-        await navigator.clipboard.writeText(textToShare);
-        alert("టెక్స్ట్ కాపీ చేయబడింది! (Copied)\nమీరు వాట్సాప్ లో పేస్ట్ చేసి పంపవచ్చు.");
-    } catch (err) {
-        // Ultimate Fallback for very old browsers
-        const textArea = document.createElement("textarea");
-        textArea.value = textToShare;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            alert("టెక్స్ట్ కాపీ చేయబడింది! (Copied)\nమీరు వాట్సాప్ లో పేస్ట్ చేసి పంపవచ్చు.");
-        } catch (e) {
-            alert("షేర్/కాపీ చేయడం విఫలమైంది.");
-        }
-        document.body.removeChild(textArea);
-    }
-}
-
-// ------------------------------------
 // Core Bible Logic
 // ------------------------------------
 function populateSidebar() {
@@ -242,14 +222,16 @@ function renderChaptersGrid() {
         gridContainer.appendChild(btn);
     }
 }
-
 function openChapterReading(chapterNum, targetVerse = null, highlightQuery = null, pushState = true) {
     clearVerseSelection(); 
     hideAllViews();
     document.getElementById('reading-view').style.display = 'block';
     
-    if (pushState && (currentChapterNum !== chapterNum || !history.state || history.state.page !== 'reading')) {
+    // స్వైప్ చేసినప్పుడు హిస్టరీ నిండిపోకుండా ఈ కింది లాజిక్ (replaceState) కాపాడుతుంది.
+    if (pushState) {
         history.pushState({page: 'reading'}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
+    } else {
+        history.replaceState({page: 'reading'}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
     }
     
     currentChapterNum = chapterNum;
@@ -303,6 +285,17 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
         }
 
         textSpan.innerHTML = displayVerseText;
+        
+        // --- Parallel English Text Code ---
+        const bIndex = bookFiles.indexOf(currentFileName);
+        const enVerseText = getKjvVerse(bIndex, chapterNum, verseNum);
+        if (enVerseText) {
+            const enSpan = document.createElement('div');
+            enSpan.className = 'verse-text-en';
+            enSpan.innerText = enVerseText;
+            textSpan.appendChild(enSpan);
+        }
+
         textSpan.onclick = () => toggleVerseSelection(verseDiv, currentBookName, chapterNum, verseNum, rawVerseText);
 
         const isSaved = isBookmarked(currentBookName, chapterNum, verseNum);
@@ -328,7 +321,49 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
 }
 
 // ------------------------------------
-// Multi-Verse Selection Logic
+// Swipe to Change Chapters Logic (with replaceState fix)
+// ------------------------------------
+function setupSwipe() {
+    const readingView = document.getElementById('reading-view');
+    if(!readingView) return;
+    
+    readingView.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    readingView.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, {passive: true});
+}
+
+function handleSwipe() {
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        let currentChapInt = parseInt(currentChapterNum);
+        let chapters = Object.keys(allBibleData[currentFileName][currentBookName]);
+        
+        if (diffX > 0) {
+            // Swipe Right -> Previous Chapter
+            if (currentChapInt > 1) {
+                // 'false' వాడటం వల్ల pushState అవ్వదు, కనుక బ్యాక్ బటన్ ప్రాబ్లమ్ రాదు.
+                openChapterReading((currentChapInt - 1).toString(), null, null, false);
+            }
+        } else {
+            // Swipe Left -> Next Chapter
+            if (chapters.includes((currentChapInt + 1).toString())) {
+                openChapterReading((currentChapInt + 1).toString(), null, null, false);
+            }
+        }
+    }
+}
+
+// ------------------------------------
+// Multi-Verse Selection & Share Logic
 // ------------------------------------
 function toggleVerseSelection(verseDiv, book, chapter, verseNum, text) {
     const verseId = `${book}_${chapter}_${verseNum}`;
@@ -361,16 +396,36 @@ function shareSelectedVerses() {
     if (selectedVerses.length === 0) return;
     selectedVerses.sort((a, b) => parseInt(a.verseNum) - parseInt(b.verseNum));
 
-    let shareText = `${selectedVerses[0].book} - అధ్యాయం ${selectedVerses[0].chapter}\n\n`;
-    selectedVerses.forEach(v => { shareText += `${v.verseNum}. ${v.text}\n`; });
-    shareText += `\n- WORLD OF GOD Bible App`;
+    let shareTextStr = `${selectedVerses[0].book} - అధ్యాయం ${selectedVerses[0].chapter}\n\n`;
+    selectedVerses.forEach(v => { shareTextStr += `${v.verseNum}. ${v.text}\n`; });
+    shareTextStr += `\n- WORLD OF GOD Bible App`;
 
-    shareTextFn(shareText, 'WORLD OF GOD - Bible Verses');
+    shareTextFn(shareTextStr, 'WORLD OF GOD - Bible Verses');
     clearVerseSelection();
 }
 
 async function shareTextFn(text, title) {
-    await shareText(text, title); // Uses Universal Share Function defined at top
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: title, text: text });
+            return; 
+        } catch (err) { console.log('Share cancelled:', err); }
+    } 
+    
+    try {
+        await navigator.clipboard.writeText(text);
+        alert("టెక్స్ట్ కాపీ చేయబడింది! (Copied)\nమీరు వాట్సాప్ లో పేస్ట్ చేసి పంపవచ్చు.");
+    } catch (err) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            alert("టెక్స్ట్ కాపీ చేయబడింది! (Copied)\nమీరు వాట్సాప్ లో పేస్ట్ చేసి పంపవచ్చు.");
+        } catch (e) { alert("షేర్/కాపీ చేయడం విఫలమైంది."); }
+        document.body.removeChild(textArea);
+    }
 }
 
 // ------------------------------------
@@ -474,11 +529,9 @@ function autoSaveNote() {
 function shareCurrentNote() {
     const title = document.getElementById('note-title-input').value.trim() || "My Note";
     const text = document.getElementById('note-content-input').value.trim();
-    
     if(!text) { alert("షేర్ చేయడానికి కంటెంట్ లేదు!"); return; }
-    
     let shareTextData = `${title}\n\n${text}\n\n- WORLD OF GOD Notes`;
-    shareText(shareTextData, title); // Use Universal Fallback function
+    shareTextFn(shareTextData, title); 
 }
 
 function deleteCurrentNote() {
@@ -641,13 +694,9 @@ async function executeSearch() {
         if(!currentFileName) currentFileName = bookFiles[0]; 
         filesToSearch = [currentFileName];
         scopeTitle = `ప్రస్తుత పుస్తకంలో`;
-    } else if (scope === 'ot') { 
-        filesToSearch = otFiles; scopeTitle = "పాత నిబంధన (OT) లో";
-    } else if (scope === 'nt') { 
-        filesToSearch = ntFiles; scopeTitle = "కొత్త నిబంధన (NT) లో"; 
-    } else if (scope === 'all') { 
-        filesToSearch = bookFiles; scopeTitle = "బైబిల్ మొత్తం లో"; 
-    }
+    } else if (scope === 'ot') { filesToSearch = otFiles; scopeTitle = "పాత నిబంధన (OT) లో";
+    } else if (scope === 'nt') { filesToSearch = ntFiles; scopeTitle = "కొత్త నిబంధన (NT) లో"; 
+    } else if (scope === 'all') { filesToSearch = bookFiles; scopeTitle = "బైబిల్ మొత్తం లో"; }
 
     let fetchPromises = filesToSearch.map(async (file) => {
         if (!allBibleData[file]) {
@@ -657,9 +706,7 @@ async function executeSearch() {
                     let data = await res.json(); 
                     allBibleData[file] = data; 
                 }
-            } catch (e) {
-                console.error("Fetch failed for: " + file);
-            }
+            } catch (e) {}
         }
     });
 
@@ -682,7 +729,7 @@ async function executeSearch() {
                     foundCount++;
                     const verseDiv = document.createElement('div');
                     verseDiv.className = 'verse search-result';
-                    verseDiv.onclick = () => { loadBookData(file, chap, vNum, query); };
+                    verseDiv.onclick = () => { openChapterReading(chap, vNum, query); loadBookData(file, chap, vNum, query); };
                     
                     const numSpan = document.createElement('span');
                     numSpan.className = 'verse-num'; 
@@ -706,6 +753,72 @@ async function executeSearch() {
         versesContainer.innerHTML = `<p style="font-size: 18px; color: #e74c3c; text-align:center; padding: 30px;">'${query}' దొరకలేదు.</p>`;
     }
     document.getElementById('reading-book-title').innerText = `${scopeTitle} ఫలితాలు (${foundCount})`;
+}
+
+// ------------------------------------
+// Parallel Bible Smart Loading Logic
+// ------------------------------------
+async function loadKjvData() {
+    try {
+        let response = await fetch('kjv.json');
+        if (response.ok) {
+            kjvBibleData = await response.json();
+            console.log("KJV Bible Loaded Successfully!");
+        }
+    } catch (error) {
+        console.log("KJV Bible load error:", error);
+    }
+}
+
+function checkParallelMode() {
+    if (isParallelMode) {
+        document.body.classList.add('show-parallel');
+    }
+}
+
+function toggleParallelBible() {
+    isParallelMode = !isParallelMode;
+    localStorage.setItem('wog_parallel', isParallelMode);
+    document.body.classList.toggle('show-parallel');
+}
+
+function getKjvVerse(bookIndex, chapterNum, verseNum) {
+    if (!kjvBibleData || bookIndex === -1) return "";
+
+    try {
+        if (kjvBibleData.verses && Array.isArray(kjvBibleData.verses)) {
+            let v = kjvBibleData.verses.find(v => (v.book == bookIndex + 1 || v.book_id == bookIndex + 1) && v.chapter == chapterNum && v.verse == verseNum);
+            if (v && v.text) return v.text;
+        }
+
+        if (kjvBibleData.books && Array.isArray(kjvBibleData.books)) {
+            let enBook = kjvBibleData.books[bookIndex];
+            if (enBook && enBook.chapters) {
+                let enChapter = enBook.chapters[chapterNum - 1] || enBook.chapters[chapterNum]; 
+                if (Array.isArray(enChapter)) {
+                    return enChapter[verseNum - 1] || "";
+                } else if (typeof enChapter === 'object') {
+                    return enChapter[verseNum] || "";
+                }
+            }
+        }
+
+        let coreData = kjvBibleData.bible || kjvBibleData.text || kjvBibleData;
+        let keys = Object.keys(coreData).filter(k => k !== 'metadata' && k !== 'info' && k !== 'version');
+        
+        if (keys.length > bookIndex) {
+            let enBookName = keys[bookIndex];
+            let enChapter = coreData[enBookName][chapterNum] || coreData[enBookName][chapterNum - 1]; 
+            if (enChapter) {
+                if (Array.isArray(enChapter)) return enChapter[verseNum - 1] || "";
+                return enChapter[verseNum] || "";
+            }
+        }
+    } catch(e) {
+        console.error("KJV parsing error:", e);
+    }
+    
+    return ""; 
 }
 
 // Start App
