@@ -50,7 +50,7 @@ function init() {
     checkParallelMode();
     loadKjvData(); 
     setupPinchZoom();
-    setupSwipe(); // Initialize swipe feature
+    setupSwipe(); 
     
     history.replaceState({page: 'home'}, "Home", "?view=home");
     showHome(false); 
@@ -227,7 +227,7 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
     hideAllViews();
     document.getElementById('reading-view').style.display = 'block';
     
-    // స్వైప్ చేసినప్పుడు హిస్టరీ నిండిపోకుండా ఈ కింది లాజిక్ (replaceState) కాపాడుతుంది.
+    // స్వైప్ చేసినప్పుడు హిస్టరీ నిండిపోకుండా replaceState కాపాడుతుంది
     if (pushState) {
         history.pushState({page: 'reading'}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
     } else {
@@ -296,7 +296,8 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
             textSpan.appendChild(enSpan);
         }
 
-        textSpan.onclick = () => toggleVerseSelection(verseDiv, currentBookName, chapterNum, verseNum, rawVerseText);
+        // ఇక్కడ ఇంగ్లీష్ టెక్స్ట్ ని కూడా సెలెక్షన్ కి పంపిస్తున్నాం
+        textSpan.onclick = () => toggleVerseSelection(verseDiv, currentBookName, chapterNum, verseNum, rawVerseText, enVerseText);
 
         const isSaved = isBookmarked(currentBookName, chapterNum, verseNum);
         const bmBtn = document.createElement('button');
@@ -321,7 +322,7 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
 }
 
 // ------------------------------------
-// Swipe to Change Chapters Logic (with replaceState fix)
+// Swipe to Change Chapters Logic 
 // ------------------------------------
 function setupSwipe() {
     const readingView = document.getElementById('reading-view');
@@ -348,13 +349,10 @@ function handleSwipe() {
         let chapters = Object.keys(allBibleData[currentFileName][currentBookName]);
         
         if (diffX > 0) {
-            // Swipe Right -> Previous Chapter
             if (currentChapInt > 1) {
-                // 'false' వాడటం వల్ల pushState అవ్వదు, కనుక బ్యాక్ బటన్ ప్రాబ్లమ్ రాదు.
                 openChapterReading((currentChapInt - 1).toString(), null, null, false);
             }
         } else {
-            // Swipe Left -> Next Chapter
             if (chapters.includes((currentChapInt + 1).toString())) {
                 openChapterReading((currentChapInt + 1).toString(), null, null, false);
             }
@@ -363,9 +361,9 @@ function handleSwipe() {
 }
 
 // ------------------------------------
-// Multi-Verse Selection & Share Logic
+// Multi-Verse Selection & Share Logic (English Included)
 // ------------------------------------
-function toggleVerseSelection(verseDiv, book, chapter, verseNum, text) {
+function toggleVerseSelection(verseDiv, book, chapter, verseNum, text, enText) {
     const verseId = `${book}_${chapter}_${verseNum}`;
     const index = selectedVerses.findIndex(v => v.id === verseId);
 
@@ -373,7 +371,8 @@ function toggleVerseSelection(verseDiv, book, chapter, verseNum, text) {
         selectedVerses.splice(index, 1);
         verseDiv.classList.remove('selected');
     } else {
-        selectedVerses.push({ id: verseId, book, chapter, verseNum, text, file: currentFileName });
+        // enText ని కూడా లిస్ట్ లోకి యాడ్ చేసాం
+        selectedVerses.push({ id: verseId, book, chapter, verseNum, text, enText, file: currentFileName });
         verseDiv.classList.add('selected');
     }
 
@@ -396,9 +395,16 @@ function shareSelectedVerses() {
     if (selectedVerses.length === 0) return;
     selectedVerses.sort((a, b) => parseInt(a.verseNum) - parseInt(b.verseNum));
 
-    let shareTextStr = `${selectedVerses[0].book} - అధ్యాయం ${selectedVerses[0].chapter}\n\n`;
-    selectedVerses.forEach(v => { shareTextStr += `${v.verseNum}. ${v.text}\n`; });
-    shareTextStr += `\n- WORLD OF GOD Bible App`;
+    let shareTextStr = `📖 ${selectedVerses[0].book} - అధ్యాయం ${selectedVerses[0].chapter}\n\n`;
+    selectedVerses.forEach(v => { 
+        shareTextStr += `${v.verseNum}. ${v.text}\n`; 
+        // ఒకవేళ ఇంగ్లీష్ వచనం ఉంటే, అది కూడా కింద వెళ్లేలా..
+        if (v.enText) {
+            shareTextStr += `(${v.enText})\n`;
+        }
+        shareTextStr += `\n`;
+    });
+    shareTextStr += `- WORLD OF GOD Bible App`;
 
     shareTextFn(shareTextStr, 'WORLD OF GOD - Bible Verses');
     clearVerseSelection();
@@ -469,7 +475,13 @@ function openNoteEditorForVerse() {
     
     selectedVerses.sort((a, b) => parseInt(a.verseNum) - parseInt(b.verseNum));
     let refTitle = `${selectedVerses[0].book} ${selectedVerses[0].chapter}:${selectedVerses.map(v => v.verseNum).join(',')}`;
-    let combinedText = selectedVerses.map(v => `${v.verseNum}. ${v.text}`).join('\n');
+    
+    // నోట్స్ లో కూడా ఇంగ్లీష్ వచనం ఆటోమేటిక్ గా వస్తుంది
+    let combinedText = selectedVerses.map(v => {
+        let txt = `${v.verseNum}. ${v.text}`;
+        if(v.enText) txt += `\n(${v.enText})`;
+        return txt;
+    }).join('\n\n');
     
     currentEditingNoteId = selectedVerses[0].id; 
     let existingNote = userNotes[currentEditingNoteId];
@@ -669,7 +681,7 @@ function setupPinchZoom() {
 }
 
 // ------------------------------------
-// Search Logic (Including "All Bible")
+// Search Logic 
 // ------------------------------------
 async function executeSearch() {
     const query = document.getElementById('search-input').value.trim();
