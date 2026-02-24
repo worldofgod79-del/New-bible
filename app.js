@@ -296,8 +296,8 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
             textSpan.appendChild(enSpan);
         }
 
-        // ఇక్కడ ఇంగ్లీష్ టెక్స్ట్ ని కూడా సెలెక్షన్ కి పంపిస్తున్నాం
-        textSpan.onclick = () => toggleVerseSelection(verseDiv, currentBookName, chapterNum, verseNum, rawVerseText, enVerseText);
+        // ఇక్కడ కేవలం తెలుగు పంపిస్తున్నాం, ఇంగ్లీష్ ని Live Fetch ద్వారా తెచ్చుకుంటాం
+        textSpan.onclick = () => toggleVerseSelection(verseDiv, currentBookName, chapterNum, verseNum, rawVerseText);
 
         const isSaved = isBookmarked(currentBookName, chapterNum, verseNum);
         const bmBtn = document.createElement('button');
@@ -361,9 +361,9 @@ function handleSwipe() {
 }
 
 // ------------------------------------
-// Multi-Verse Selection & Share Logic (English Included)
+// Multi-Verse Selection & Share Logic (With LIVE FETCH for English)
 // ------------------------------------
-function toggleVerseSelection(verseDiv, book, chapter, verseNum, text, enText) {
+function toggleVerseSelection(verseDiv, book, chapter, verseNum, text) {
     const verseId = `${book}_${chapter}_${verseNum}`;
     const index = selectedVerses.findIndex(v => v.id === verseId);
 
@@ -371,8 +371,11 @@ function toggleVerseSelection(verseDiv, book, chapter, verseNum, text, enText) {
         selectedVerses.splice(index, 1);
         verseDiv.classList.remove('selected');
     } else {
-        // enText ని కూడా లిస్ట్ లోకి యాడ్ చేసాం
-        selectedVerses.push({ id: verseId, book, chapter, verseNum, text, enText, file: currentFileName });
+        // LIVE FETCH: సెలెక్ట్ చేసిన క్షణంలోనే ఇంగ్లీష్ వచనాన్ని క్యాచ్ చేస్తున్నాం
+        const bIndex = bookFiles.indexOf(currentFileName);
+        const liveEnText = getKjvVerse(bIndex, chapter, verseNum);
+        
+        selectedVerses.push({ id: verseId, book, chapter, verseNum, text, enText: liveEnText, file: currentFileName });
         verseDiv.classList.add('selected');
     }
 
@@ -398,8 +401,8 @@ function shareSelectedVerses() {
     let shareTextStr = `📖 ${selectedVerses[0].book} - అధ్యాయం ${selectedVerses[0].chapter}\n\n`;
     selectedVerses.forEach(v => { 
         shareTextStr += `${v.verseNum}. ${v.text}\n`; 
-        // ఒకవేళ ఇంగ్లీష్ వచనం ఉంటే, అది కూడా కింద వెళ్లేలా..
-        if (v.enText) {
+        // ఇంగ్లీష్ వచనం ఉంటే బ్రాకెట్స్ లో యాడ్ చేస్తాం
+        if (v.enText && v.enText.trim() !== "") {
             shareTextStr += `(${v.enText})\n`;
         }
         shareTextStr += `\n`;
@@ -479,7 +482,7 @@ function openNoteEditorForVerse() {
     // నోట్స్ లో కూడా ఇంగ్లీష్ వచనం ఆటోమేటిక్ గా వస్తుంది
     let combinedText = selectedVerses.map(v => {
         let txt = `${v.verseNum}. ${v.text}`;
-        if(v.enText) txt += `\n(${v.enText})`;
+        if(v.enText && v.enText.trim() !== "") txt += `\n(${v.enText})`;
         return txt;
     }).join('\n\n');
     
