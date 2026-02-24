@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WORLD OF GOD - Bible App</title>
+    <title>WORLD OF GOD Bible</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -14,12 +14,9 @@
     <div class="header-left">
         <button class="icon-btn" onclick="toggleSidebar()"><span class="material-icons-outlined">menu</span></button>
     </div>
-    <h1 onclick="showHome()" style="cursor: pointer;">WORLD OF GOD</h1>
+    <h1 onclick="showHome()" style="cursor: pointer; color: white;">WORLD OF GOD Bible</h1>
     <div class="header-right">
-        <button class="icon-btn" onclick="showHistoryView()"><span class="material-icons-outlined">history</span></button>
-        <button class="icon-btn" onclick="showBookmarksView()"><span class="material-icons-outlined">bookmarks</span></button>
-        <button class="icon-btn" onclick="toggleDarkMode()"><span class="material-icons-outlined" id="theme-icon">dark_mode</span></button>
-        <button class="icon-btn" onclick="toggleSearch()"><span class="material-icons-outlined">search</span></button>
+        <button class="icon-btn" onclick="toggleSettingsModal()"><span class="material-icons-outlined">settings</span></button>
     </div>
 </header>
 
@@ -31,6 +28,23 @@
     </div>
     <div class="sidebar-content" id="sidebar-books"></div>
 </aside>
+
+<div class="search-modal" id="settings-modal">
+    <div class="search-modal-content" style="max-width: 320px;">
+        <div class="modal-header">
+            <h2>సెట్టింగ్స్ (Options)</h2>
+            <button class="close-btn" onclick="toggleSettingsModal()"><span class="material-icons-outlined">close</span></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="menu-book-btn" onclick="toggleSettingsModal(); toggleSearch();" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined">search</span> వెతుకులాట (Search)</button>
+            <button class="menu-book-btn" onclick="toggleSettingsModal(); toggleParallelBible();" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined" id="parallel-icon">language</span> ఇంగ్లీష్ బైబిల్ (KJV)</button>
+            <button class="menu-book-btn" onclick="toggleSettingsModal(); showNotesView(true);" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined">edit_note</span> నా నోట్స్ (Notes)</button>
+            <button class="menu-book-btn" onclick="toggleSettingsModal(); showBookmarksView(true);" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined">bookmarks</span> బుక్‌మార్క్స్</button>
+            <button class="menu-book-btn" onclick="toggleSettingsModal(); showHistoryView(true);" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined">history</span> చరిత్ర (History)</button>
+            <button class="menu-book-btn" onclick="toggleSettingsModal(); toggleDarkMode();" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined" id="theme-icon">dark_mode</span> డార్క్ మోడ్ (Theme)</button>
+        </div>
+    </div>
+</div>
 
 <div class="search-modal" id="search-modal">
     <div class="search-modal-content">
@@ -67,6 +81,21 @@
             <button class="color-btn" style="background: #bfdbfe;" onclick="applyHighlight('#bfdbfe')"></button>
             <button class="color-btn" style="background: #fbcfe8;" onclick="applyHighlight('#fbcfe8')"></button>
             <button class="color-btn" style="background: transparent; border: 2px solid #ccc; font-weight: bold; color: var(--text);" onclick="applyHighlight('none')">✖</button>
+        </div>
+    </div>
+</div>
+
+<div class="search-modal" id="note-modal">
+    <div class="search-modal-content">
+        <div class="modal-header">
+            <h2>స్టడీ నోట్</h2>
+            <button class="close-btn" onclick="closeNoteModal()"><span class="material-icons-outlined">close</span></button>
+        </div>
+        <p id="note-verse-ref" style="color: var(--accent); font-weight: bold; margin-bottom: 10px;"></p>
+        <textarea id="note-text" rows="5" placeholder="మీ స్టడీ నోట్స్ ఇక్కడ వ్రాయండి..."></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="primary-btn" style="flex: 1;" onclick="saveNote()">సేవ్ చేయండి</button>
+            <button class="secondary-btn" style="flex: 1;" onclick="closeNoteModal()">క్యాన్సిల్</button>
         </div>
     </div>
 </div>
@@ -174,16 +203,31 @@
             <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
             <h2 class="book-title"><span class="material-icons-outlined">info</span> మా గురించి</h2>
         </div>
+        
         <div class="about-card">
-            <h2>WORLD OF GOD</h2>
-            <p><strong>Founder & Creator:</strong> Rajesh Karatapu</p>
-            <p>దేవుని వాక్యాన్ని ప్రతి ఒక్కరికీ సులభంగా, స్పష్టంగా అందించాలనే ఉద్దేశ్యంతో ఈ బైబిల్ యాప్ మరియు మా యూట్యూబ్ ఛానెల్ రూపొందించబడ్డాయి.</p>
+            <h2 style="margin-bottom: 5px; font-size: 30px;">WORLD OF GOD</h2>
+            <p style="color: var(--accent); font-weight: bold; margin-bottom: 25px;">Founder: Rajesh Karatapu</p>
             
-            <div class="youtube-section">
-                <span class="material-icons" style="color: red; font-size: 50px;">play_circle_filled</span>
-                <h3>మా YouTube ఛానెల్‌</h3>
-                <p>మరిన్ని ఆత్మీయ సందేశాలు మరియు క్రిస్టియన్ పాటల కోసం మా ఛానెల్ ని ఫాలో అవ్వండి.</p>
-                <a href="https://www.youtube.com/" target="_blank" class="yt-btn">YouTube లో చూడండి</a>
+            <div class="about-text-content">
+                <p>దేవుని వాక్యం.. మన రక్షణకు, శిక్షణకు పరలోకపు తండ్రి వ్రాయించిన తన మనసులోని మాటలు.</p>
+                <p>సామాజిక మాధ్యమాల ద్వారా దేవుని వాక్యం అందరికీ చాలా దగ్గరైంది కానీ.. సత్యమైనది దూరముగాను, లోతుగాను ఉన్నదని.. దానిని పరిశీలిస్తేనే బోధపడుతుందని వాక్యం సెలవిచ్చింది.</p>
+                <p>వాక్యాన్ని వక్రీకరించి సత్యాన్ని అందకుండా చేయాలన్న అపవాది కుయుక్తులను అధిగమిస్తూ.. మా వంతు ప్రయత్నంగా <strong>WORLD OF GOD</strong> యూట్యూబ్ ఛానల్, వాట్సాప్ గ్రూప్ ద్వారా దేవుని వాక్యాన్ని సరిగా విభజిస్తూ.. దేవుని దయవలన మా చిన్న పరిచర్యను జరిగిస్తున్నాము..</p>
+                
+                <h3 class="about-tagline">
+                    వాక్యాన్ని నేర్చుకుందాం..! అందరికీ అందచేద్దాం..!!
+                </h3>
+            </div>
+            
+            <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px;">
+                <a href="https://youtube.com/@worldofgod_telugu?si=86j4uaQMH7gB7S7S" target="_blank" class="social-btn outline-yt">
+                    <span class="material-icons">play_circle_filled</span> YouTube లో చూడండి
+                </a>
+                <a href="https://chat.whatsapp.com/DMAtEr4enJ5IoxA0c8Loag?mode=gi_t" target="_blank" class="social-btn outline-wa">
+                    <span class="material-icons">chat</span> WhatsApp లో చేరండి
+                </a>
+                <a href="https://www.instagram.com/world._of_god?igsh=cW1obW9sNGVmMHg4" target="_blank" class="social-btn outline-ig">
+                    <span class="material-icons">photo_camera</span> Instagram లో ఫాలో అవ్వండి
+                </a>
             </div>
         </div>
     </div>
