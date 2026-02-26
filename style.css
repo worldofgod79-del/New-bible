@@ -84,7 +84,7 @@ body.dark-mode .sidebar-header { color: var(--accent); }
 }
 .menu-book-btn:hover { background: var(--bg); color: var(--accent); font-weight: bold; }
 
-/* Views & Containers - Mobile Padding Optimization */
+/* Views & Containers */
 .view-container { padding: 15px; max-width: 900px; margin: 0 auto; min-height: 80vh; padding-bottom: 90px;}
 @media (max-width: 450px) {
     .view-container { padding: 10px; } 
@@ -172,37 +172,25 @@ body.dark-mode .outline-ig:hover { background: #E1306C; color: #ffffff; }
 .chapter-btn.active { background: var(--primary); color: var(--accent); border-color: var(--accent); }
 body.dark-mode .chapter-btn.active { color: var(--bg); background: var(--accent); }
 
-/* --------------------------------------------------- */
-/* NEW VERSES LAYOUT (BOOK STYLE) - REDUCED GAPS       */
-/* --------------------------------------------------- */
+/* Verses Layout */
 #verses-container { padding: 5px 0; }
 .verse { 
     position: relative; 
-    margin-bottom: 8px; /* వచనాల మధ్య గ్యాప్ తగ్గించాను (20px నుండి 8px కి) */
-    padding: 5px 30px 5px 0px; /* బుక్‌మార్క్ కోసం 45px నుండి 30px కి తగ్గించాను */
+    margin-bottom: 8px; 
+    padding: 5px 30px 5px 0px; 
     border-radius: 8px; 
     transition: background-color 0.2s;
 }
-.verse-num { 
-    color: var(--accent); 
-    font-weight: bold; 
-    margin-right: 6px; 
-    font-size: 16px; 
-}
-.verse-text { 
-    font-family: 'Mallanna', serif; 
-    font-size: var(--verse-size); 
-    line-height: 1.6; /* లైన్ల మధ్య గ్యాప్ ని కొద్దిగా టైట్ చేశాను (1.8 నుండి 1.6 కి) */
-    cursor: pointer; 
-}
+.verse-num { color: var(--accent); font-weight: bold; margin-right: 6px; font-size: 16px; }
+.verse-text { font-family: 'Mallanna', serif; font-size: var(--verse-size); line-height: 1.6; cursor: pointer; }
 
-/* Parallel Bible (English) Styles */
+/* Parallel Bible */
 .verse-text-en {
     display: none; 
     font-family: 'Georgia', serif; 
     font-size: calc(var(--verse-size) - 4px); 
     color: #555;
-    margin-top: 5px; /* ఇంగ్లీష్ వచనానికి గ్యాప్ తగ్గించాను */
+    margin-top: 5px; 
     padding-top: 5px;
     border-top: 1px dashed var(--border);
     line-height: 1.4;
@@ -215,17 +203,11 @@ body.show-parallel .verse-text-en { display: block; }
 .verse.selected { background-color: rgba(212, 175, 55, 0.15); border-left: 4px solid var(--accent); padding-left: 10px;}
 body.dark-mode .verse.selected { background-color: rgba(200, 162, 65, 0.25); }
 
-/* Bookmark Button (Absolute positioning & reduced spacing) */
+/* Bookmark Button */
 .bookmark-btn { 
-    position: absolute; 
-    top: 5px; 
-    right: -5px; /* ఐకాన్ ని ఇంకొంచెం కుడి అంచుకి జరిపాను */
-    background: none; 
-    border: none; 
-    cursor: pointer; 
-    color: #777; 
-    transition: 0.2s; 
-    padding: 5px; /* ప్యాడింగ్ తగ్గించాను */
+    position: absolute; top: 5px; right: -5px; 
+    background: none; border: none; cursor: pointer; color: #777; 
+    transition: 0.2s; padding: 5px; 
 }
 body.dark-mode .bookmark-btn { color: #555; }
 .bookmark-btn.saved { color: var(--accent); }
@@ -290,6 +272,22 @@ body.dark-mode .primary-btn { color: var(--bg); background: var(--accent); }
 .color-btn { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
 .color-btn:hover { transform: scale(1.1); }
 .highlight { background: var(--highlight-search-bg); font-weight: bold; color: var(--highlight-search-text); padding: 0 4px; border-radius: 3px; }
+
+/* NEW: Music Player Styles */
+.music-btn {
+    width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font-size: 18px; font-family: inherit; font-weight: bold;
+    display: flex; align-items: center; justify-content: flex-start; gap: 10px; cursor: pointer; transition: 0.3s;
+}
+.music-btn:hover { border-color: var(--accent); }
+.music-btn.active { background: rgba(212, 175, 55, 0.15); border-color: var(--accent); color: var(--primary); }
+body.dark-mode .music-btn.active { color: var(--accent); }
+.music-btn .status-icon { margin-left: auto; color: gray; }
+.music-btn.active .status-icon { color: var(--accent); }
+
+.stop-music-btn { color: #e74c3c; justify-content: center; margin-top: 10px; }
+.stop-music-btn:hover { background: #fee2e2; border-color: #e74c3c; }
+body.dark-mode .stop-music-btn:hover { background: #7f1d1d; color: white; border-color: #7f1d1d;}
 
 /* Floating Selection Action Bar */
 #selection-action-bar {
