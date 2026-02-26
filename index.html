@@ -16,6 +16,7 @@
     </div>
     <h1 onclick="showHome()" style="cursor: pointer; color: white;">WORLD OF GOD Bible</h1>
     <div class="header-right">
+        <button class="icon-btn" onclick="toggleMusicModal()"><span class="material-icons-outlined">music_note</span></button>
         <button class="icon-btn" onclick="toggleSettingsModal()"><span class="material-icons-outlined">settings</span></button>
     </div>
 </header>
@@ -43,6 +44,41 @@
             <button class="menu-book-btn" onclick="toggleSettingsModal(); showHistoryView(true);" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined">history</span> చరిత్ర (History)</button>
             <button class="menu-book-btn" onclick="toggleSettingsModal(); toggleDarkMode();" style="display: flex; align-items: center; gap: 10px; font-size: 18px;"><span class="material-icons-outlined" id="theme-icon">dark_mode</span> డార్క్ మోడ్ (Theme)</button>
         </div>
+    </div>
+</div>
+
+<div class="search-modal" id="music-modal">
+    <div class="search-modal-content" style="max-width: 350px;">
+        <div class="modal-header">
+            <h2 style="display: flex; align-items: center; gap: 8px;"><span class="material-icons">headphones</span> ఫోకస్ సౌండ్స్</h2>
+            <button class="close-btn" onclick="toggleMusicModal()"><span class="material-icons-outlined">close</span></button>
+        </div>
+        
+        <p style="font-size: 14px; color: gray; margin-bottom: 15px; text-align: center;">వాక్యం చదివేటప్పుడు ప్రశాంతత కోసం...</p>
+
+        <div class="music-list" style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="music-btn" id="btn-rain" onclick="playMusic('rain.mp3', 'btn-rain')">
+                <span class="material-icons">water_drop</span> వర్షం (Rain) <span class="status-icon material-icons-outlined">play_circle</span>
+            </button>
+            <button class="music-btn" id="btn-nature" onclick="playMusic('nature.mp3', 'btn-nature')">
+                <span class="material-icons">eco</span> ప్రకృతి (Nature) <span class="status-icon material-icons-outlined">play_circle</span>
+            </button>
+            <button class="music-btn" id="btn-piano" onclick="playMusic('piano.mp3', 'btn-piano')">
+                <span class="material-icons">piano</span> ప్రశాంతమైన పియానో <span class="status-icon material-icons-outlined">play_circle</span>
+            </button>
+            <button class="music-btn stop-music-btn" onclick="stopMusic()">
+                <span class="material-icons">stop_circle</span> మ్యూజిక్ ఆపు (Stop)
+            </button>
+        </div>
+
+        <div style="margin-top: 25px;">
+            <label style="font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
+                <span class="material-icons-outlined">volume_up</span> వాల్యూమ్ (Volume)
+            </label>
+            <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.4" onchange="changeVolume()" style="width: 100%; accent-color: var(--accent);">
+        </div>
+        
+        <audio id="bg-audio" loop></audio>
     </div>
 </div>
 
