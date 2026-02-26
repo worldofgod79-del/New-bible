@@ -72,6 +72,10 @@ function toggleSettingsModal() {
     document.getElementById('settings-modal').classList.toggle('open');
 }
 
+function toggleMusicModal() {
+    document.getElementById('music-modal').classList.toggle('open');
+}
+
 function openHighlightPalette() {
     document.getElementById('highlight-modal').classList.add('open');
 }
@@ -227,7 +231,7 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
     hideAllViews();
     document.getElementById('reading-view').style.display = 'block';
     
-    // స్వైప్ చేసినప్పుడు హిస్టరీ నిండిపోకుండా replaceState కాపాడుతుంది
+    // Swipe History fix
     if (pushState) {
         history.pushState({page: 'reading'}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
     } else {
@@ -243,7 +247,8 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
     
     for (let cNum in chapters) {
         const btn = document.createElement('button');
-        btn.className = 'chapter-btn'; btn.innerText = `Ch ${cNum}`;
+        btn.className = 'chapter-btn';
+        btn.innerText = `Ch ${cNum}`;
         if (cNum === chapterNum) btn.classList.add('active');
         btn.onclick = () => { openChapterReading(cNum); };
         chaptersList.appendChild(btn);
@@ -286,7 +291,6 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
 
         textSpan.innerHTML = displayVerseText;
         
-        // --- Parallel English Text Code ---
         const bIndex = bookFiles.indexOf(currentFileName);
         const enVerseText = getKjvVerse(bIndex, chapterNum, verseNum);
         if (enVerseText) {
@@ -296,7 +300,6 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
             textSpan.appendChild(enSpan);
         }
 
-        // ఇక్కడ కేవలం తెలుగు పంపిస్తున్నాం, ఇంగ్లీష్ ని Live Fetch ద్వారా తెచ్చుకుంటాం
         textSpan.onclick = () => toggleVerseSelection(verseDiv, currentBookName, chapterNum, verseNum, rawVerseText);
 
         const isSaved = isBookmarked(currentBookName, chapterNum, verseNum);
@@ -361,7 +364,7 @@ function handleSwipe() {
 }
 
 // ------------------------------------
-// Multi-Verse Selection & Share Logic (With LIVE FETCH for English)
+// Multi-Verse Selection & Share Logic (Live Fetch)
 // ------------------------------------
 function toggleVerseSelection(verseDiv, book, chapter, verseNum, text) {
     const verseId = `${book}_${chapter}_${verseNum}`;
@@ -371,7 +374,6 @@ function toggleVerseSelection(verseDiv, book, chapter, verseNum, text) {
         selectedVerses.splice(index, 1);
         verseDiv.classList.remove('selected');
     } else {
-        // LIVE FETCH: సెలెక్ట్ చేసిన క్షణంలోనే ఇంగ్లీష్ వచనాన్ని క్యాచ్ చేస్తున్నాం
         const bIndex = bookFiles.indexOf(currentFileName);
         const liveEnText = getKjvVerse(bIndex, chapter, verseNum);
         
@@ -401,7 +403,6 @@ function shareSelectedVerses() {
     let shareTextStr = `📖 ${selectedVerses[0].book} - అధ్యాయం ${selectedVerses[0].chapter}\n\n`;
     selectedVerses.forEach(v => { 
         shareTextStr += `${v.verseNum}. ${v.text}\n`; 
-        // ఇంగ్లీష్ వచనం ఉంటే బ్రాకెట్స్ లో యాడ్ చేస్తాం
         if (v.enText && v.enText.trim() !== "") {
             shareTextStr += `(${v.enText})\n`;
         }
@@ -420,7 +421,6 @@ async function shareTextFn(text, title) {
             return; 
         } catch (err) { console.log('Share cancelled:', err); }
     } 
-    
     try {
         await navigator.clipboard.writeText(text);
         alert("టెక్స్ట్ కాపీ చేయబడింది! (Copied)\nమీరు వాట్సాప్ లో పేస్ట్ చేసి పంపవచ్చు.");
@@ -442,7 +442,6 @@ async function shareTextFn(text, title) {
 // ------------------------------------
 function applyHighlight(color) {
     if(selectedVerses.length === 0) return;
-    
     selectedVerses.forEach(v => {
         const textSpan = document.getElementById(`verse-text-${v.id}`);
         if (color === 'none') {
@@ -453,7 +452,6 @@ function applyHighlight(color) {
             if(textSpan) textSpan.style.backgroundColor = color;
         }
     });
-
     localStorage.setItem('wog_highlights', JSON.stringify(userHighlights));
     closeHighlightPalette();
     clearVerseSelection();
@@ -467,7 +465,6 @@ function createNewNote() {
     document.getElementById('note-title-input').value = "";
     document.getElementById('note-content-input').value = "";
     document.getElementById('note-save-status').innerText = "";
-    
     hideAllViews();
     document.getElementById('note-editor-view').style.display = 'block';
     history.pushState({page: 'note-editor'}, "Edit Note", "?view=note-editor");
@@ -475,11 +472,9 @@ function createNewNote() {
 
 function openNoteEditorForVerse() {
     if(selectedVerses.length === 0) return;
-    
     selectedVerses.sort((a, b) => parseInt(a.verseNum) - parseInt(b.verseNum));
     let refTitle = `${selectedVerses[0].book} ${selectedVerses[0].chapter}:${selectedVerses.map(v => v.verseNum).join(',')}`;
     
-    // నోట్స్ లో కూడా ఇంగ్లీష్ వచనం ఆటోమేటిక్ గా వస్తుంది
     let combinedText = selectedVerses.map(v => {
         let txt = `${v.verseNum}. ${v.text}`;
         if(v.enText && v.enText.trim() !== "") txt += `\n(${v.enText})`;
@@ -488,7 +483,6 @@ function openNoteEditorForVerse() {
     
     currentEditingNoteId = selectedVerses[0].id; 
     let existingNote = userNotes[currentEditingNoteId];
-    
     document.getElementById('note-title-input').value = existingNote ? existingNote.title : refTitle;
     document.getElementById('note-content-input').value = existingNote ? existingNote.text : combinedText + "\n\n(మీ నోట్స్ ఇక్కడ ప్రారంభించండి...)\n";
     document.getElementById('note-save-status').innerText = "";
@@ -496,7 +490,6 @@ function openNoteEditorForVerse() {
     hideAllViews();
     document.getElementById('note-editor-view').style.display = 'block';
     history.pushState({page: 'note-editor'}, "Edit Note", "?view=note-editor");
-    
     clearVerseSelection();
 }
 
@@ -507,7 +500,6 @@ function openExistingNote(noteId) {
         document.getElementById('note-title-input').value = existingNote.title || "";
         document.getElementById('note-content-input').value = existingNote.text || "";
         document.getElementById('note-save-status').innerText = "";
-        
         hideAllViews();
         document.getElementById('note-editor-view').style.display = 'block';
         history.pushState({page: 'note-editor'}, "Edit Note", "?view=note-editor");
@@ -519,7 +511,6 @@ function autoSaveNote() {
     const title = document.getElementById('note-title-input').value;
     const text = document.getElementById('note-content-input').value;
     const statusEl = document.getElementById('note-save-status');
-    
     statusEl.innerText = "సేవ్ అవుతోంది...";
     statusEl.style.color = "gray";
 
@@ -534,7 +525,6 @@ function autoSaveNote() {
             noteObj.date = Date.now();
             userNotes[currentEditingNoteId] = noteObj;
         }
-        
         localStorage.setItem('wog_notes', JSON.stringify(userNotes));
         statusEl.innerText = "సేవ్ చేయబడింది ✔";
         statusEl.style.color = "green";
@@ -566,9 +556,7 @@ function renderNotesList() {
         container.innerHTML = '<p style="text-align:center; color:gray; padding: 30px;">మీరు ఇంకా ఎలాంటి నోట్స్ వ్రాయలేదు.</p>';
         return;
     }
-
     const sortedNotes = noteKeys.map(k => ({id: k, ...userNotes[k]})).sort((a,b) => b.date - a.date);
-
     sortedNotes.forEach(note => {
         const card = document.createElement('div');
         card.className = 'list-card';
@@ -616,7 +604,7 @@ function renderHistory() {
 }
 
 // ------------------------------------
-// Bookmarks Logic
+// Bookmarks Logic (With Delete Feature)
 // ------------------------------------
 function toggleBookmark(book, chapter, verseNum, text, btnElement) {
     const id = `${book}_${chapter}_${verseNum}`;
@@ -638,6 +626,15 @@ function isBookmarked(book, chapter, verseNum) {
     return bookmarks.some(b => b.id === `${book}_${chapter}_${verseNum}`);
 }
 
+function deleteBookmarkFromList(event, id) {
+    event.stopPropagation(); 
+    if(confirm("ఈ బుక్‌మార్క్‌ ని డిలీట్ చేయాలనుకుంటున్నారా?")) {
+        bookmarks = bookmarks.filter(b => b.id !== id);
+        localStorage.setItem('wog_bookmarks', JSON.stringify(bookmarks));
+        renderBookmarks(); 
+    }
+}
+
 function renderBookmarks() {
     const container = document.getElementById('bookmarks-container');
     container.innerHTML = '';
@@ -649,38 +646,23 @@ function renderBookmarks() {
         const card = document.createElement('div');
         card.className = 'list-card';
         card.innerHTML = `
-            <div class="ref">${bm.book} ${bm.chapter}:${bm.verseNum}</div>
-            <div class="text">${bm.text}</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <div class="ref">${bm.book} ${bm.chapter}:${bm.verseNum}</div>
+                    <div class="text">${bm.text}</div>
+                </div>
+                <button class="icon-btn" style="color: #e74c3c; padding: 5px; margin-left: 10px;" onclick="deleteBookmarkFromList(event, '${bm.id}')">
+                    <span class="material-icons-outlined">delete</span>
+                </button>
+            </div>
         `;
-        card.onclick = () => { loadBookData(bm.file || bm.book+".json", bm.chapter, bm.verseNum); };
+        card.onclick = (e) => { 
+            if(!e.target.closest('button')) {
+                loadBookData(bm.file || bm.book+".json", bm.chapter, bm.verseNum); 
+            }
+        };
         container.appendChild(card);
     });
-}
-
-// ------------------------------------
-// Pinch-to-Zoom
-// ------------------------------------
-function setupPinchZoom() {
-    const versesContainer = document.getElementById('verses-container');
-    if(!versesContainer) return;
-    versesContainer.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-    });
-    versesContainer.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2 && initialDistance) {
-            e.preventDefault(); 
-            let currentDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-            let diff = currentDistance - initialDistance;
-            
-            if (Math.abs(diff) > 10) {
-                if (diff > 0 && currentFontSize < 40) currentFontSize += 0.5;
-                else if (diff < 0 && currentFontSize > 14) currentFontSize -= 0.5;
-                document.documentElement.style.setProperty('--verse-size', currentFontSize + 'px');
-                initialDistance = currentDistance; 
-            }
-        }
-    });
-    versesContainer.addEventListener('touchend', () => { initialDistance = null; });
 }
 
 // ------------------------------------
@@ -832,8 +814,61 @@ function getKjvVerse(bookIndex, chapterNum, verseNum) {
     } catch(e) {
         console.error("KJV parsing error:", e);
     }
-    
     return ""; 
+}
+
+// ------------------------------------
+// NEW: MUSIC PLAYER LOGIC
+// ------------------------------------
+let currentAudioBtn = null;
+
+function playMusic(src, btnId) {
+    const audio = document.getElementById('bg-audio');
+    
+    // పాత బటన్స్ అన్నీ రీసెట్ చేస్తున్నాం
+    document.querySelectorAll('.music-btn').forEach(btn => {
+        btn.classList.remove('active');
+        let icon = btn.querySelector('.status-icon');
+        if(icon) icon.innerText = 'play_circle';
+    });
+
+    // ఒకవేళ ప్లే అవుతున్న బటన్ నే మళ్ళీ నొక్కితే పాజ్ అవ్వాలి
+    if (currentAudioBtn === btnId && !audio.paused) {
+        audio.pause();
+        currentAudioBtn = null;
+        return;
+    }
+
+    // కొత్త ఆడియో ప్లే
+    audio.src = src;
+    audio.play().catch(e => {
+        alert("ఆడియో ఫైల్ కనుగొనబడలేదు. దయచేసి 'rain.mp3', 'nature.mp3', 'piano.mp3' ఫైల్స్ ని మీ ఫోల్డర్ లో వేసుకోండి.");
+    });
+    
+    // ఆక్టివ్ బటన్ డిజైన్ మారుస్తున్నాం
+    const activeBtn = document.getElementById(btnId);
+    activeBtn.classList.add('active');
+    activeBtn.querySelector('.status-icon').innerText = 'pause_circle';
+    currentAudioBtn = btnId;
+}
+
+function stopMusic() {
+    const audio = document.getElementById('bg-audio');
+    audio.pause();
+    audio.currentTime = 0; // మొదటకి తీసుకొస్తున్నాం
+    currentAudioBtn = null;
+    
+    document.querySelectorAll('.music-btn').forEach(btn => {
+        btn.classList.remove('active');
+        let icon = btn.querySelector('.status-icon');
+        if(icon) icon.innerText = 'play_circle';
+    });
+}
+
+function changeVolume() {
+    const audio = document.getElementById('bg-audio');
+    const vol = document.getElementById('music-volume').value;
+    audio.volume = vol;
 }
 
 // Start App
