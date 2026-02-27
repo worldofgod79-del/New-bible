@@ -115,7 +115,8 @@ window.onpopstate = function(event) {
         const page = event.state.page;
         if (page === 'home') document.getElementById('home-view').style.display = 'block';
         else if (page === 'chapters') document.getElementById('chapters-view').style.display = 'block';
-        else if (page === 'reading') { document.getElementById('reading-view').style.display = 'block'; openChapterReading(currentChapterNum, null, null, false); }
+        else if (page === 'verses') openVersesSelection(event.state.chap, false);
+        else if (page === 'reading') openChapterReading(currentChapterNum, null, null, false); 
         else if (page === 'bookmarks') { document.getElementById('bookmarks-view').style.display = 'block'; renderBookmarks(); }
         else if (page === 'notes') { document.getElementById('notes-view').style.display = 'block'; renderNotesList(); }
         else if (page === 'note-editor') document.getElementById('note-editor-view').style.display = 'block';
@@ -210,8 +211,14 @@ async function loadBookData(fileName, targetChapter = null, targetVerse = null, 
     currentBookName = Object.keys(allBibleData[fileName])[0]; 
     document.getElementById('chapters-book-title').innerText = currentBookName;
     
-    if (targetChapter) { openChapterReading(targetChapter, targetVerse, highlightQuery); } 
-    else { renderChaptersGrid(); }
+    // డైరెక్ట్ సెర్చ్ నుండి వస్తే నేరుగా ఓపెన్ అవుతుంది, లేదంటే చాప్టర్స్ గ్రిడ్
+    if (targetChapter && targetVerse) { 
+        openChapterReading(targetChapter, targetVerse, highlightQuery); 
+    } else if (targetChapter) {
+        openVersesSelection(targetChapter);
+    } else { 
+        renderChaptersGrid(); 
+    }
 }
 
 function renderChaptersGrid() {
@@ -222,10 +229,40 @@ function renderChaptersGrid() {
     for (let chapterNum in chapters) {
         const btn = document.createElement('button');
         btn.className = 'grid-num-btn'; btn.innerText = chapterNum;
-        btn.onclick = () => { openChapterReading(chapterNum); };
+        // చాప్టర్ నొక్కగానే వచనాల (Verses) గ్రిడ్ కి వెళ్లేలా మార్చాం
+        btn.onclick = () => { openVersesSelection(chapterNum); };
         gridContainer.appendChild(btn);
     }
 }
+
+// క్రొత్త ఫంక్షన్: వచనాలను ఎంచుకునే గ్రిడ్
+function openVersesSelection(chapterNum, pushState = true) {
+    currentChapterNum = chapterNum;
+    hideAllViews();
+    document.getElementById('verses-selection-view').style.display = 'block';
+
+    if (pushState) {
+        history.pushState({page: 'verses', chap: chapterNum}, "Verses", `?view=verses&book=${currentFileName}&chap=${chapterNum}`);
+    }
+
+    document.getElementById('verses-selection-title').innerText = `${currentBookName} ${chapterNum}`;
+    
+    const gridContainer = document.getElementById('verses-grid-container');
+    gridContainer.innerHTML = '';
+
+    const verses = allBibleData[currentFileName][currentBookName][chapterNum];
+    for (let verseNum in verses) {
+        const btn = document.createElement('button');
+        btn.className = 'grid-num-btn';
+        btn.innerText = verseNum;
+        // వచనం నొక్కగానే కరెక్ట్ గా ఆ వచనం దగ్గరికి స్క్రోల్ అయ్యేలా (targetVerse) పంపిస్తున్నాం
+        btn.onclick = () => { openChapterReading(chapterNum, verseNum); };
+        gridContainer.appendChild(btn);
+    }
+}
+// ------------------------------------
+// Reading View & Scroll Logic
+// ------------------------------------
 function openChapterReading(chapterNum, targetVerse = null, highlightQuery = null, pushState = true) {
     clearVerseSelection(); 
     hideAllViews();
@@ -233,9 +270,9 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
     
     // Swipe History fix
     if (pushState) {
-        history.pushState({page: 'reading'}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
+        history.pushState({page: 'reading', chap: chapterNum}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
     } else {
-        history.replaceState({page: 'reading'}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
+        history.replaceState({page: 'reading', chap: chapterNum}, "Reading", `?view=reading&book=${currentFileName}&chap=${chapterNum}`);
     }
     
     currentChapterNum = chapterNum;
@@ -314,10 +351,22 @@ function openChapterReading(chapterNum, targetVerse = null, highlightQuery = nul
         versesContainer.appendChild(verseDiv);
     }
 
+    // NEW: Scroll to target verse with highlight effect
     if (targetVerse) {
         setTimeout(() => {
             const targetElement = document.getElementById(`verse-${targetVerse}`);
-            if (targetElement) { targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            if (targetElement) { 
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+                
+                // చిన్న ఎఫెక్ట్ కోసం బ్యాక్ గ్రౌండ్ కలర్ మార్చి మళ్ళీ నార్మల్ చేస్తున్నాం
+                const originalBg = targetElement.style.backgroundColor;
+                targetElement.style.transition = 'background-color 0.5s ease';
+                targetElement.style.backgroundColor = 'rgba(212, 175, 55, 0.2)'; 
+                
+                setTimeout(() => {
+                    targetElement.style.backgroundColor = originalBg || 'transparent';
+                }, 1500); // 1.5 సెకన్ల తర్వాత ఎఫెక్ట్ పోతుంది
+            }
         }, 300);
     } else {
         window.scrollTo(0,0);
@@ -666,6 +715,32 @@ function renderBookmarks() {
 }
 
 // ------------------------------------
+// Pinch-to-Zoom
+// ------------------------------------
+function setupPinchZoom() {
+    const versesContainer = document.getElementById('verses-container');
+    if(!versesContainer) return;
+    versesContainer.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+    });
+    versesContainer.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && initialDistance) {
+            e.preventDefault(); 
+            let currentDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            let diff = currentDistance - initialDistance;
+            
+            if (Math.abs(diff) > 10) {
+                if (diff > 0 && currentFontSize < 40) currentFontSize += 0.5;
+                else if (diff < 0 && currentFontSize > 14) currentFontSize -= 0.5;
+                document.documentElement.style.setProperty('--verse-size', currentFontSize + 'px');
+                initialDistance = currentDistance; 
+            }
+        }
+    });
+    versesContainer.addEventListener('touchend', () => { initialDistance = null; });
+}
+
+// ------------------------------------
 // Search Logic 
 // ------------------------------------
 async function executeSearch() {
@@ -818,34 +893,30 @@ function getKjvVerse(bookIndex, chapterNum, verseNum) {
 }
 
 // ------------------------------------
-// NEW: MUSIC PLAYER LOGIC
+// MUSIC PLAYER LOGIC
 // ------------------------------------
 let currentAudioBtn = null;
 
 function playMusic(src, btnId) {
     const audio = document.getElementById('bg-audio');
     
-    // పాత బటన్స్ అన్నీ రీసెట్ చేస్తున్నాం
     document.querySelectorAll('.music-btn').forEach(btn => {
         btn.classList.remove('active');
         let icon = btn.querySelector('.status-icon');
         if(icon) icon.innerText = 'play_circle';
     });
 
-    // ఒకవేళ ప్లే అవుతున్న బటన్ నే మళ్ళీ నొక్కితే పాజ్ అవ్వాలి
     if (currentAudioBtn === btnId && !audio.paused) {
         audio.pause();
         currentAudioBtn = null;
         return;
     }
 
-    // కొత్త ఆడియో ప్లే
     audio.src = src;
     audio.play().catch(e => {
         alert("ఆడియో ఫైల్ కనుగొనబడలేదు. దయచేసి 'rain.mp3', 'nature.mp3', 'piano.mp3' ఫైల్స్ ని మీ ఫోల్డర్ లో వేసుకోండి.");
     });
     
-    // ఆక్టివ్ బటన్ డిజైన్ మారుస్తున్నాం
     const activeBtn = document.getElementById(btnId);
     activeBtn.classList.add('active');
     activeBtn.querySelector('.status-icon').innerText = 'pause_circle';
@@ -855,7 +926,7 @@ function playMusic(src, btnId) {
 function stopMusic() {
     const audio = document.getElementById('bg-audio');
     audio.pause();
-    audio.currentTime = 0; // మొదటకి తీసుకొస్తున్నాం
+    audio.currentTime = 0; 
     currentAudioBtn = null;
     
     document.querySelectorAll('.music-btn').forEach(btn => {
