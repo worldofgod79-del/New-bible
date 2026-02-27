@@ -53,31 +53,17 @@
             <h2 style="display: flex; align-items: center; gap: 8px;"><span class="material-icons">headphones</span> ఫోకస్ సౌండ్స్</h2>
             <button class="close-btn" onclick="toggleMusicModal()"><span class="material-icons-outlined">close</span></button>
         </div>
-        
         <p style="font-size: 14px; color: gray; margin-bottom: 15px; text-align: center;">వాక్యం చదివేటప్పుడు ప్రశాంతత కోసం...</p>
-
         <div class="music-list" style="display: flex; flex-direction: column; gap: 12px;">
-            <button class="music-btn" id="btn-rain" onclick="playMusic('rain.mp3', 'btn-rain')">
-                <span class="material-icons">water_drop</span> వర్షం (Rain) <span class="status-icon material-icons-outlined">play_circle</span>
-            </button>
-            <button class="music-btn" id="btn-nature" onclick="playMusic('nature.mp3', 'btn-nature')">
-                <span class="material-icons">eco</span> ప్రకృతి (Nature) <span class="status-icon material-icons-outlined">play_circle</span>
-            </button>
-            <button class="music-btn" id="btn-piano" onclick="playMusic('piano.mp3', 'btn-piano')">
-                <span class="material-icons">piano</span> ప్రశాంతమైన పియానో <span class="status-icon material-icons-outlined">play_circle</span>
-            </button>
-            <button class="music-btn stop-music-btn" onclick="stopMusic()">
-                <span class="material-icons">stop_circle</span> మ్యూజిక్ ఆపు (Stop)
-            </button>
+            <button class="music-btn" id="btn-rain" onclick="playMusic('rain.mp3', 'btn-rain')"><span class="material-icons">water_drop</span> వర్షం (Rain) <span class="status-icon material-icons-outlined">play_circle</span></button>
+            <button class="music-btn" id="btn-nature" onclick="playMusic('nature.mp3', 'btn-nature')"><span class="material-icons">eco</span> ప్రకృతి (Nature) <span class="status-icon material-icons-outlined">play_circle</span></button>
+            <button class="music-btn" id="btn-piano" onclick="playMusic('piano.mp3', 'btn-piano')"><span class="material-icons">piano</span> ప్రశాంతమైన పియానో <span class="status-icon material-icons-outlined">play_circle</span></button>
+            <button class="music-btn stop-music-btn" onclick="stopMusic()"><span class="material-icons">stop_circle</span> మ్యూజిక్ ఆపు (Stop)</button>
         </div>
-
         <div style="margin-top: 25px;">
-            <label style="font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;">
-                <span class="material-icons-outlined">volume_up</span> వాల్యూమ్ (Volume)
-            </label>
+            <label style="font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px;"><span class="material-icons-outlined">volume_up</span> వాల్యూమ్ (Volume)</label>
             <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.4" onchange="changeVolume()" style="width: 100%; accent-color: var(--accent);">
         </div>
-        
         <audio id="bg-audio" loop></audio>
     </div>
 </div>
@@ -144,32 +130,13 @@
             <p>"దేవుడు లోకమును ఎంతో ప్రేమించెను. కాగా ఆయన తన అద్వితీయకుమారునిగా పుట్టిన వానియందు విశ్వాసముంచు ప్రతివాడును నశింపక నిత్యజీవము పొందునట్లు ఆయనను అనుగ్రహించెను."</p>
             <span class="verse-ref">- యోహాను 3:16</span>
         </div>
-
         <div class="home-grid">
-            <div class="grid-item" onclick="openSection('ot')">
-                <div class="icon"><span class="material-icons-outlined">menu_book</span></div>
-                <h4>పాత నిబంధన</h4>
-            </div>
-            <div class="grid-item" onclick="openSection('nt')">
-                <div class="icon"><span class="material-icons-outlined">import_contacts</span></div>
-                <h4>కొత్త నిబంధన</h4>
-            </div>
-            <div class="grid-item" onclick="showBookmarksView()">
-                <div class="icon"><span class="material-icons-outlined">bookmarks</span></div>
-                <h4>బుక్‌మార్క్స్</h4>
-            </div>
-            <div class="grid-item" onclick="showNotesView()">
-                <div class="icon"><span class="material-icons-outlined">edit_note</span></div>
-                <h4>నా నోట్స్</h4>
-            </div>
-            <div class="grid-item" onclick="showHistoryView()">
-                <div class="icon"><span class="material-icons-outlined">history</span></div>
-                <h4>చరిత్ర</h4>
-            </div>
-            <div class="grid-item" onclick="showAboutView()">
-                <div class="icon"><span class="material-icons-outlined">info</span></div>
-                <h4>మా గురించి</h4>
-            </div>
+            <div class="grid-item" onclick="openSection('ot')"><div class="icon"><span class="material-icons-outlined">menu_book</span></div><h4>పాత నిబంధన</h4></div>
+            <div class="grid-item" onclick="openSection('nt')"><div class="icon"><span class="material-icons-outlined">import_contacts</span></div><h4>కొత్త నిబంధన</h4></div>
+            <div class="grid-item" onclick="showBookmarksView()"><div class="icon"><span class="material-icons-outlined">bookmarks</span></div><h4>బుక్‌మార్క్స్</h4></div>
+            <div class="grid-item" onclick="showNotesView()"><div class="icon"><span class="material-icons-outlined">edit_note</span></div><h4>నా నోట్స్</h4></div>
+            <div class="grid-item" onclick="showHistoryView()"><div class="icon"><span class="material-icons-outlined">history</span></div><h4>చరిత్ర</h4></div>
+            <div class="grid-item" onclick="showAboutView()"><div class="icon"><span class="material-icons-outlined">info</span></div><h4>మా గురించి</h4></div>
         </div>
     </div>
 
@@ -179,6 +146,14 @@
             <h2 class="book-title" id="chapters-book-title">Loading...</h2>
         </div>
         <div class="chapter-grid" id="chapter-grid-container"></div>
+    </div>
+
+    <div id="verses-selection-view" class="view-container" style="display: none;">
+        <div class="page-header">
+            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
+            <h2 class="book-title" id="verses-selection-title">Loading...</h2>
+        </div>
+        <div class="chapter-grid" id="verses-grid-container"></div>
     </div>
 
     <div id="reading-view" class="view-container" style="display: none;">
@@ -191,23 +166,13 @@
     </div>
 
     <div id="bookmarks-view" class="view-container" style="display: none;">
-        <div class="page-header">
-            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
-            <h2 class="book-title"><span class="material-icons-outlined">bookmarks</span> మీ బుక్‌మార్క్స్</h2>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button><h2 class="book-title"><span class="material-icons-outlined">bookmarks</span> మీ బుక్‌మార్క్స్</h2></div>
         <div id="bookmarks-container"></div>
     </div>
 
     <div id="notes-view" class="view-container" style="display: none;">
-        <div class="page-header">
-            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
-            <h2 class="book-title"><span class="material-icons-outlined">edit_note</span> నా నోట్స్</h2>
-        </div>
-        
-        <button class="primary-btn" onclick="createNewNote()" style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px;">
-            <span class="material-icons">add</span> క్రొత్త నోట్ (Create New)
-        </button>
-        
+        <div class="page-header"><button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button><h2 class="book-title"><span class="material-icons-outlined">edit_note</span> నా నోట్స్</h2></div>
+        <button class="primary-btn" onclick="createNewNote()" style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 8px;"><span class="material-icons">add</span> క్రొత్త నోట్ (Create New)</button>
         <div id="notes-list-container"></div>
     </div>
 
@@ -227,43 +192,25 @@
     </div>
 
     <div id="history-view" class="view-container" style="display: none;">
-        <div class="page-header">
-            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
-            <h2 class="book-title"><span class="material-icons-outlined">history</span> ఇటీవల చదివినవి</h2>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button><h2 class="book-title"><span class="material-icons-outlined">history</span> ఇటీవల చదివినవి</h2></div>
         <div id="history-container"></div>
     </div>
 
     <div id="about-view" class="view-container" style="display: none;">
-        <div class="page-header">
-            <button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button>
-            <h2 class="book-title"><span class="material-icons-outlined">info</span> మా గురించి</h2>
-        </div>
-        
+        <div class="page-header"><button class="back-btn" onclick="goBack()"><span class="material-icons-outlined">arrow_back</span> వెనక్కి</button><h2 class="book-title"><span class="material-icons-outlined">info</span> మా గురించి</h2></div>
         <div class="about-card">
             <h2 style="margin-bottom: 5px; font-size: 30px;">WORLD OF GOD</h2>
-            <p style="color: var(--accent); font-weight: bold; margin-bottom: 25px;">Founder: Rajesh Karatapu & Raja Talluri</p>
-            
+            <p style="color: var(--accent); font-weight: bold; margin-bottom: 25px;">Founder: Rajesh Karatapu</p>
             <div class="about-text-content">
                 <p>దేవుని వాక్యం.. మన రక్షణకు, శిక్షణకు పరలోకపు తండ్రి వ్రాయించిన తన మనసులోని మాటలు.</p>
                 <p>సామాజిక మాధ్యమాల ద్వారా దేవుని వాక్యం అందరికీ చాలా దగ్గరైంది కానీ.. సత్యమైనది దూరముగాను, లోతుగాను ఉన్నదని.. దానిని పరిశీలిస్తేనే బోధపడుతుందని వాక్యం సెలవిచ్చింది.</p>
                 <p>వాక్యాన్ని వక్రీకరించి సత్యాన్ని అందకుండా చేయాలన్న అపవాది కుయుక్తులను అధిగమిస్తూ.. మా వంతు ప్రయత్నంగా <strong>WORLD OF GOD</strong> యూట్యూబ్ ఛానల్, వాట్సాప్ గ్రూప్ ద్వారా దేవుని వాక్యాన్ని సరిగా విభజిస్తూ.. దేవుని దయవలన మా చిన్న పరిచర్యను జరిగిస్తున్నాము..</p>
-                
-                <h3 class="about-tagline">
-                    వాక్యాన్ని నేర్చుకుందాం..! అందరికీ అందచేద్దాం..!!
-                </h3>
+                <h3 class="about-tagline">వాక్యాన్ని నేర్చుకుందాం..! అందరికీ అందచేద్దాం..!!</h3>
             </div>
-            
             <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px;">
-                <a href="https://youtube.com/@worldofgod_telugu?si=86j4uaQMH7gB7S7S" target="_blank" class="social-btn outline-yt">
-                    <span class="material-icons">play_circle_filled</span> YouTube లో చూడండి
-                </a>
-                <a href="https://chat.whatsapp.com/DMAtEr4enJ5IoxA0c8Loag?mode=gi_t" target="_blank" class="social-btn outline-wa">
-                    <span class="material-icons">chat</span> WhatsApp లో చేరండి
-                </a>
-                <a href="https://www.instagram.com/world._of_god?igsh=cW1obW9sNGVmMHg4" target="_blank" class="social-btn outline-ig">
-                    <span class="material-icons">photo_camera</span> Instagram లో ఫాలో అవ్వండి
-                </a>
+                <a href="https://youtube.com/@worldofgod_telugu?si=86j4uaQMH7gB7S7S" target="_blank" class="social-btn outline-yt"><span class="material-icons">play_circle_filled</span> YouTube లో చూడండి</a>
+                <a href="https://chat.whatsapp.com/DMAtEr4enJ5IoxA0c8Loag?mode=gi_t" target="_blank" class="social-btn outline-wa"><span class="material-icons">chat</span> WhatsApp లో చేరండి</a>
+                <a href="https://www.instagram.com/world._of_god?igsh=cW1obW9sNGVmMHg4" target="_blank" class="social-btn outline-ig"><span class="material-icons">photo_camera</span> Instagram లో ఫాలో అవ్వండి</a>
             </div>
         </div>
     </div>
